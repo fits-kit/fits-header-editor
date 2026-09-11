@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Edit & Fix Astronomical FITS Headers: Practical Troubleshooting Guide</title>
+  <meta name="description" content="Step-by-step practical guide on editing and diagnosing FITS header metadata for astrophotographers and researchers. Learn to fix plate-solving, Bayer pattern, and exposure errors.">
+  <meta name="author" content="Observational Astrophotography Technical Group">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.7;
+      color: var(--text-main);
+      background-color: var(--bg-page);
+      padding: 0 1rem;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 2rem auto 4rem auto;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-left: 1.25rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .eeat-badge {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .eeat-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #bfdbfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .eeat-meta strong {
+      color: var(--text-main);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    p {
+      margin-bottom: 1.2rem;
+      color: #334155;
+    }
+
+    /* Problem / Solution Grid */
+    .trouble-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .trouble-card {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+
+    .trouble-card h4 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #b91c1c;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .trouble-card .solution {
+      font-size: 0.9rem;
+      color: #166534;
+      background: #dcfce7;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      margin-top: 0.75rem;
+    }
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+      margin: 1.75rem 0;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-main);
+      font-weight: 600;
+      padding: 1rem 1.2rem;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    /* Screenshots */
+    .screenshot-box {
+      margin: 2rem 0;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .screenshot-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      box-shadow: var(--shadow);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .caption {
+      margin-top: 0.75rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .cta-container {
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      color: #ffffff;
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      text-align: center;
+      margin: 3rem 0;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .cta-container h3 {
+      color: #ffffff;
+      font-size: 1.75rem;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta-container p {
+      color: #e0e7ff;
+      max-width: 600px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .cta-btn:hover {
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--code-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Navigation -->
+    <header>
+      <div class="nav-bar">
+        <a href="index.html" class="brand">
+          🔭 FITS Metadata Lab
+        </a>
+        <div class="nav-links">
+          <a href="index.html">Overview & Comparison</a>
+          <a href="edit-fits-header-guide.html" class="active">Practical Editing Guide</a>
+          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">Open Online Tool ↗</a>
+        </div>
+      </div>
+
+      <h1>Practical Field Guide: How to Inspect & Edit Astronomical FITS Metadata</h1>
+      <p class="subtitle">A hands-on troubleshooting guide for resolving stacking failures, debayer errors, plate-solving issues, and mislabeled filter tags in astronomical FITS files.</p>
+
+      <div class="eeat-badge">
+        <div class="eeat-avatar">DOC</div>
+        <div class="eeat-meta">
+          <strong>Field Tested by:</strong> Observational Astrophotography Technical Team<br>
+          <strong>Focus Area:</strong> Real-world FITS Header Repair & Calibration Workflows | <strong>Year:</strong> 2026
+        </div>
+      </div>
+    </header>
+
+    <!-- Why Header Metadata Breaks -->
+    <section class="card">
+      <h2>⚠️ Common Real-World Scenarios Requiring Header Editing</h2>
+      <p>Whether you capture data with N.I.N.A., ASIAIR, KStars/Ekos, or proprietary observatory software, metadata errors frequently corrupt post-processing pipelines. Below are the most frequent issues experienced astronomers encounter:</p>
+
+      <div class="trouble-grid">
+        <div class="trouble-card">
+          <h4>❌ Missing or Corrupt BAYERPAT</h4>
+          <p>Color cameras (OSC) require a valid <code>BAYERPAT</code> (e.g. <code>RGGB</code>, <code>BGGR</code>). If missing, Siril or PixInsight produces monochromatic or inverted color images during debayering.</p>
+          <div class="solution"><strong>Fix:</strong> Add or edit the <code>BAYERPAT</code> keyword to match your sensor's color filter array pattern.</div>
+        </div>
+
+        <div class="trouble-card">
+          <h4>❌ Plate-Solving Failures (WCS / Scale)</h4>
+          <p>Plate solvers (ASTAP, ASTROMETRY.NET) fail when telescope focal length (<code>FOCALLEN</code>) or sensor pixel size (<code>PIXSIZE</code> / <code>XPIXSZ</code>) are zero or incorrectly recorded.</p>
+          <div class="solution"><strong>Fix:</strong> Correct the exact optical parameters directly in the header table.</div>
+        </div>
+
+        <div class="trouble-card">
+          <h4>❌ Unassigned Filter Metadata in LRGB / SHO</h4>
+          <p>Mono imaging sequences occasionally lose the <code>FILTER</code> tag, causing automated stacking tools to blend Narrowband Ha with Luminance or Red channels.</p>
+          <div class="solution"><strong>Fix:</strong> Set the exact filter name (e.g., <code>Ha 3nm</code>, <code>OIII</code>, <code>Lum</code>) on all relevant subframes.</div>
+        </div>
+
+        <div class="trouble-card">
+          <h4>❌ Inconsistent Exposure Time (EXPTIME)</h4>
+          <p>When stacking with sigma-clipping or exposure weighting, zero or mismatched <code>EXPTIME</code> values distort signal-to-noise ratio (SNR) algorithms.</p>
+          <div class="solution"><strong>Fix:</strong> Recalibrate the numeric exposure time in seconds.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Walkthrough -->
+    <section class="card">
+      <h2>🛠️ Visual Step-by-Step Walkthrough</h2>
+      <p>Here is how you can inspect and modify these parameters safely using the zero-friction online editor:</p>
+
+      <h3>Step 1: Open and Inspect the File</h3>
+      <p>Load your subframe or master light into the browser. The file is parsed completely client-side:</p>
+
+      <div class="screenshot-box">
+        <img src="./img/1-fits-header-viewer-editor.png" alt="Loading FITS file into the editor" width="850">
+        <div class="caption">Figure 1: Client-side file selection interface. Drag your target file or load the sample data to test.</div>
+      </div>
+
+      <h3>Step 2: Locate, Modify, or Add Missing Keywords</h3>
+      <p>Use the structured table to make instant changes without writing scripts or opening terminal windows:</p>
+
+      <div class="screenshot-box">
+        <img src="./img/2-fits-header-editor-ui.png" alt="Editing FITS header cards" width="850">
+        <div class="caption">Figure 2: The interactive editor table displaying cards, types, values, comments, and quick helper injection buttons.</div>
+      </div>
+
+      <p><strong>Pro-Tip for Fast Editing:</strong> Click the <strong>Quick Helpers</strong> buttons at the top of the table (such as <code>+ OBJECT</code>, <code>+ EXPTIME</code>, <code>+ FILTER</code>, <code>+ BAYERPAT</code>, <code>+ GAIN</code>). The editor automatically fills the standardized keyword name and opens the input field with the proper data type pre-selected.</p>
+    </section>
+
+    <!-- Standard Astronomical Keywords Reference Table -->
+    <section class="card">
+      <h2>📖 Standard Astronomical FITS Keywords Reference Table</h2>
+      <p>Refer to this reference when modifying standard header cards to maintain compatibility with NASA and IAU guidelines:</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>FITS Keyword</th>
+              <th>Data Type</th>
+              <th>Example Standard Value</th>
+              <th>Scientific Description & Function</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>SIMPLE</code></td>
+              <td>Boolean</td>
+              <td><code>T</code></td>
+              <td>Indicates whether the file conforms strictly to the standard FITS specification. Must be first card.</td>
+            </tr>
+            <tr>
+              <td><code>BITPIX</code></td>
+              <td>Integer</td>
+              <td><code>16</code> / <code>-32</code></td>
+              <td>Bits per data pixel (16 = unsigned/signed short; -32 = single-precision IEEE float).</td>
+            </tr>
+            <tr>
+              <td><code>NAXIS</code></td>
+              <td>Integer</td>
+              <td><code>2</code> (or <code>3</code>)</td>
+              <td>Number of coordinate axes (2 for 2D astronomical image; 3 for datacubes/RGB).</td>
+            </tr>
+            <tr>
+              <td><code>OBJECT</code></td>
+              <td>String</td>
+              <td><code>'M42 Orion Nebula'</code></td>
+              <td>Target celestial object name for cataloging and project identification.</td>
+            </tr>
+            <tr>
+              <td><code>EXPTIME</code></td>
+              <td>Float / Number</td>
+              <td><code>300.0</code></td>
+              <td>Total exposure duration of the observation measured in seconds.</td>
+            </tr>
+            <tr>
+              <td><code>FILTER</code></td>
+              <td>String</td>
+              <td><code>'Ha'</code>, <code>'OIII'</code>, <code>'Luminance'</code></td>
+              <td>Optical filter utilized during the capture sequence.</td>
+            </tr>
+            <tr>
+              <td><code>BAYERPAT</code></td>
+              <td>String</td>
+              <td><code>'RGGB'</code> / <code>'BGGR'</code></td>
+              <td>CFA (Color Filter Array) pattern required for proper debayering.</td>
+            </tr>
+            <tr>
+              <td><code>FOCALLEN</code></td>
+              <td>Float / Number</td>
+              <td><code>800.0</code></td>
+              <td>Effective focal length of the telescope/lens optical train in millimeters.</td>
+            </tr>
+            <tr>
+              <td><code>PIXSIZE</code></td>
+              <td>Float / Number</td>
+              <td><code>3.76</code></td>
+              <td>Physical pixel pitch of the sensor active area in microns (μm).</td>
+            </tr>
+            <tr>
+              <td><code>GAIN</code></td>
+              <td>Integer / Float</td>
+              <td><code>100</code></td>
+              <td>Sensor amplifier gain setting utilized during frame acquisition.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <div class="cta-container">
+      <h3>Fix Your FITS Headers Online</h3>
+      <p>Clean, correct, and re-export your astrophotography files in seconds with zero server uploads.</p>
+      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">Open FITS Header Editor Online ↗</a>
+    </div>
+
+    <!-- Related Links -->
+    <section class="card">
+      <h2>🔗 Related Resources</h2>
+      <p>Check out our comprehensive tool comparison: <a href="index.html" style="font-weight: 600; color: var(--primary);">Desktop Pro Software vs. Python Astropy vs. Online Browser Tool →</a></p>
+    </section>
+
+    <footer>
+      <p>© 2026 FITS Metadata Standards Lab. Dedicated to open, accessible astronomical data processing.</p>
+      <p style="margin-top: 0.5rem; font-size: 0.82rem;">Standard guidelines in accordance with NASA FITS Standard V4.0.</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

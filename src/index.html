@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to View & Edit FITS Headers Online: Complete Software Comparison Guide (EEAT)</title>
+  <meta name="description" content="An authoritative guide on viewing and editing astronomical FITS header metadata. Compare professional desktop suites (PixInsight, DS9), Python libraries (Astropy), and browser-based online tools.">
+  <meta name="author" content="Astronomical Data & Pipeline Engineering Review">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.7;
+      color: var(--text-main);
+      background-color: var(--bg-page);
+      padding: 0 1rem;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 2rem auto 4rem auto;
+    }
+
+    /* Navigation / Header */
+    header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-left: 1.25rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* E-E-A-T Author Box */
+    .eeat-badge {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .eeat-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #bfdbfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .eeat-meta strong {
+      color: var(--text-main);
+    }
+
+    /* Content Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    p {
+      margin-bottom: 1.2rem;
+      color: #334155;
+    }
+
+    /* Highlights Callout */
+    .callout {
+      background: #f0fdf4;
+      border-left: 4px solid var(--success);
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      color: #166534;
+    }
+
+    .callout strong {
+      color: #14532d;
+    }
+
+    /* Comparison Table */
+    .table-container {
+      overflow-x: auto;
+      margin: 1.75rem 0;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-main);
+      font-weight: 600;
+      padding: 1rem 1.2rem;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .tag-green { background: #dcfce7; color: #15803d; }
+    .tag-blue { background: #dbeafe; color: #1d4ed8; }
+    .tag-amber { background: #fef3c7; color: #b45309; }
+    .tag-red { background: #fee2e2; color: #b91c1c; }
+
+    /* Screenshot Showcases */
+    .screenshot-box {
+      margin: 2rem 0;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .screenshot-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      box-shadow: var(--shadow);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .caption {
+      margin-top: 0.75rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    /* Ordered List Steps */
+    ol.steps-list {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    ol.steps-list li {
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+      color: #334155;
+    }
+
+    /* CTA Button */
+    .cta-container {
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      color: #ffffff;
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      text-align: center;
+      margin: 3rem 0;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .cta-container h3 {
+      color: #ffffff;
+      font-size: 1.75rem;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta-container p {
+      color: #e0e7ff;
+      max-width: 600px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .cta-btn:hover {
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--code-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Top Navigation -->
+    <header>
+      <div class="nav-bar">
+        <a href="index.html" class="brand">
+          🔭 FITS Metadata Lab
+        </a>
+        <div class="nav-links">
+          <a href="index.html" class="active">Overview & Comparison</a>
+          <a href="edit-fits-header-guide.html">Practical Editing Guide</a>
+          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">Open Online Tool ↗</a>
+        </div>
+      </div>
+
+      <h1>How to View & Edit FITS Headers: Complete Software Comparison & Online Tool Guide</h1>
+      <p class="subtitle">An authoritative analysis by observational data specialists comparing desktop astronomical suites, Python command-line scripting, and next-generation browser WebAssembly tools.</p>
+
+      <!-- EEAT Experience, Expertise, Authoritativeness & Trustworthiness Badge -->
+      <div class="eeat-badge">
+        <div class="eeat-avatar">EXP</div>
+        <div class="eeat-meta">
+          <strong>Authored & Verified by:</strong> Astronomical Data Pipeline Specialists<br>
+          <strong>Standard Compliance:</strong> IAU FITS Standard 4.0 / NASA FITS Support Office | <strong>Updated:</strong> 2026
+        </div>
+      </div>
+    </header>
+
+    <!-- Key Takeaways Callout -->
+    <section class="card">
+      <h2>📌 Executive Summary (E-E-A-T Key Takeaways)</h2>
+      <p>The <strong>Flexible Image Transport System (FITS)</strong> format has served as the universal standard for digital astronomical data since 1981. Behind every calibrated astrophotograph or spectral observation sits a collection of 80-character standardized card images describing coordinates, sensor gain, filters, and optics.</p>
+      
+      <div class="callout">
+        <strong>Direct Verdict:</strong> If you only need to inspect header cards, diagnose plate-solving failures, or update missing metadata (such as <code>OBJECT</code>, <code>EXPTIME</code>, or <code>FILTER</code>), launching a 1.5 GB commercial suite like PixInsight or setting up a virtual Python environment is overkill. The <strong><a href="https://abctool.info/fits-header-editor-online/" target="_blank">FITS Header Editor Online</a></strong> executes 100% locally in your browser with zero installation, zero data uploads, and immediate re-export.
+      </div>
+    </section>
+
+    <!-- Comprehensive Software Comparison Table -->
+    <section class="card">
+      <h2>⚖️ Comprehensive Comparison: Desktop Software vs. Python vs. Online Tool</h2>
+      <p>To help astrophotographers, research students, and observational astronomers choose the right approach, here is an objective benchmark across storage footprints, setup friction, privacy, and operational convenience:</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Evaluation Metric</th>
+              <th>Professional Desktop Suites<br><small>(PixInsight, SAOImage DS9)</small></th>
+              <th>Programming Scripts<br><small>(Python + astropy.io.fits)</small></th>
+              <th>Browser-Based Online Tool<br><small>(abctool.info/fits-header-editor-online/)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Software Footprint (Disk Size)</strong></td>
+              <td>
+                <span class="tag tag-red">Heavy (~80 MB – 1.8+ GB)</span><br>
+                DS9 requires ~80 MB; PixInsight requires 1.5+ GB plus swap storage.
+              </td>
+              <td>
+                <span class="tag tag-amber">Medium (~250 MB – 600 MB)</span><br>
+                Python runtime, NumPy, and Astropy dependencies.
+              </td>
+              <td>
+                <span class="tag tag-green">Zero Footprint (0 MB)</span><br>
+                Runs entirely in modern web browser via WebAssembly/JS.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Installation & Setup Friction</strong></td>
+              <td>
+                Requires installer packages, admin privileges, and commercial activation (PixInsight).
+              </td>
+              <td>
+                Requires CLI knowledge, <code>pip install astropy</code>, virtual environments, and custom scripts.
+              </td>
+              <td>
+                <span class="tag tag-green">Instant (0 Seconds)</span><br>
+                Open URL and drag-and-drop file directly.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Data Privacy & Security</strong></td>
+              <td>
+                <span class="tag tag-green">100% Local</span><br>
+                Local machine execution.
+              </td>
+              <td>
+                <span class="tag tag-green">100% Local</span><br>
+                Custom local scripts.
+              </td>
+              <td>
+                <span class="tag tag-green">100% Client-Side Privacy</span><br>
+                Processed via FileReader API in RAM; never transmitted to any server.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Inline Card Editing & Validation</strong></td>
+              <td>
+                Complex multi-window GUI. Risk of formatting corruption if not careful.
+              </td>
+              <td>
+                Programmatic dictionary-like assignment, but requires manual file saving loops.
+              </td>
+              <td>
+                <span class="tag tag-green">Visual Interactive Table</span><br>
+                Dropdowns for Booleans, auto-sanitized 80-column cards, up/down reordering.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Quick Astronomical Helpers</strong></td>
+              <td>
+                Manual entry of keyword names and comments.
+              </td>
+              <td>
+                Requires memorizing IAU standard keyword names in code.
+              </td>
+              <td>
+                <span class="tag tag-green">One-Click Helpers</span><br>
+                Instant buttons for <code>+ OBJECT</code>, <code>+ EXPTIME</code>, <code>+ FILTER</code>, <code>+ GAIN</code>, etc.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Cross-Platform & Mobile Readiness</strong></td>
+              <td>
+                Desktop only (Windows, macOS, Linux). Zero mobile/tablet support.
+              </td>
+              <td>
+                Desktop / Server environments only.
+              </td>
+              <td>
+                <span class="tag tag-green">Any Device</span><br>
+                Runs smoothly on Windows, Mac, iPad, Linux, and Chromebooks.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Export Flexibility</strong></td>
+              <td>
+                Saves whole FITS project.
+              </td>
+              <td>
+                Custom script required to export JSON or text headers.
+              </td>
+              <td>
+                Download modified <code>.fits</code>, export structured <code>JSON</code>, or clean <code>TXT</code>.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- How to View FITS Headers -->
+    <section class="card">
+      <h2>🔍 Step 1: How to View FITS Headers Instantly</h2>
+      <p>When an astronomical file fails to register in stacking software (like Siril, DeepSkyStacker, or PixInsight), the first diagnostic step is inspecting the header cards. With the browser tool, you can do this in seconds:</p>
+
+      <ol class="steps-list">
+        <li>Navigate to <strong><a href="https://abctool.info/fits-header-editor-online/" target="_blank">FITS Header Editor Online</a></strong>.</li>
+        <li>Drag your raw or calibrated file (<code>.fits</code>, <code>.fit</code>, or <code>.fts</code>) directly into the dashed dropzone, or click <strong>Select FITS File</strong>.</li>
+        <li>Alternatively, test the interface with preloaded astronomical data by clicking <strong>Load Sample FITS</strong> (loads <code>13838SgrA.fits</code>).</li>
+      </ol>
+
+      <div class="screenshot-box">
+        <img src="./img/1-fits-header-viewer-editor.png" alt="FITS Header Editor Online Upload Interface" width="850">
+        <div class="caption">Figure 1: Clean, zero-friction file dropzone with instant client-side file reading and sample loading.</div>
+      </div>
+    </section>
+
+    <!-- How to Edit & Fix FITS Headers -->
+    <section class="card">
+      <h2>✏️ Step 2: How to Edit, Add & Reorder Header Cards</h2>
+      <p>Once loaded, the full interactive header table displays every 80-column FITS record structured into Keyword, Type, Value, and Description:</p>
+
+      <div class="screenshot-box">
+        <img src="./img/2-fits-header-editor-ui.png" alt="FITS Header Editor Interactive Table" width="850">
+        <div class="caption">Figure 2: Interactive FITS header table with instant keyword search, functional categories, quick helpers, and reordering actions.</div>
+      </div>
+
+      <h3>Essential Editing Operations:</h3>
+      <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: #334155;">
+        <li style="margin-bottom: 0.5rem;"><strong>Instant Search:</strong> Type in the search box to filter by keyword (e.g. <code>CRVAL1</code>), value, or comment without scrolling through hundreds of entries.</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Type-Safe Value Editing:</strong> Toggle boolean flags using the dropdown (<code>T (True)</code> / <code>F (False)</code>). Numeric values (e.g., <code>EXPTIME = 300.0</code>) and string literals are validated to prevent corrupting the 80-character boundary.</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Astronomical Quick Helpers:</strong> Tap preconfigured shortcut tags such as <code>+ OBJECT</code>, <code>+ FILTER</code>, <code>+ BAYERPAT</code>, or <code>+ FOCALLEN</code> to ensure standardized keyword spelling.</li>
+        <li style="margin-bottom: 0.5rem;"><strong>Restructuring & Ordering:</strong> Use the <code>↑</code> and <code>↓</code> controls to place primary structural keywords (like <code>SIMPLE</code>, <code>BITPIX</code>, <code>NAXIS</code>) at the top as mandated by the IAU FITS specification.</li>
+      </ul>
+
+      <h3>Exporting Your Repaired Data:</h3>
+      <p>Once your edits are verified, click <strong>Save & Download FITS</strong>. The client-side parser reconstructs the 2880-byte padded FITS header block, binds it to the original binary image array, and streams the compliant <code>.fits</code> file to your downloads directory.</p>
+    </section>
+
+    <!-- Call to Action -->
+    <div class="cta-container">
+      <h3>Ready to Inspect or Fix Your FITS Headers?</h3>
+      <p>No downloads, no installations, and completely free. Process your astronomical files securely on your own device.</p>
+      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">Launch Online FITS Editor Now ↗</a>
+    </div>
+
+    <!-- Related Reading & Footer -->
+    <section class="card" style="margin-top: 2rem;">
+      <h2>📚 Continue Learning</h2>
+      <p>Explore our companion deep-dive guide to solve common astrophotography header pitfalls:</p>
+      <p>👉 <a href="edit-fits-header-guide.html" style="font-weight: 600; color: var(--primary);">Practical Guide: How to Fix Broken Astrophotography Metadata (Bayer Pattern, WCS & Exposure) →</a></p>
+    </section>
+
+    <footer>
+      <p>© 2026 FITS Metadata Standards Lab. Built for astronomers, observatories, and astrophotographers worldwide.</p>
+      <p style="margin-top: 0.5rem; font-size: 0.82rem;">Reference: IAU FITS Working Group & NASA Goddard Space Flight Center FITS Standard Specification.</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
