@@ -2,7 +2,7 @@
 
 > 浏览器端快速、安全地查看、编辑、添加与导出天文 **FITS**（`.fits`、`.fit`、`.fts`）头文件元数据的在线工具，完全在客户端本地运行。
 >
-> 🔗 **在线工具**: [https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)
+> 🔗 **在线工具**: [https://abctool.info/fits-header-editor-online/zh/](https://abctool.info/fits-header-editor-online/zh/)
 >
 > 🌐 [English](README.md) | [Español](README.es.md) | **中文** | [日本語](README.ja.md)
 
@@ -12,7 +12,7 @@
 
 在传统工作流中，查看或修改天文 FITS 文件头元数据通常需要安装庞大的专业桌面软件（例如 SAOImage DS9、AstroImageJ、PixInsight），或者编写使用 `astropy.io.fits` 的 Python 脚本。
 
-**[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/)** 将完整的 FITS 文件头查看与编辑能力直接带入您的网页浏览器：
+**[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/zh/)** 将完整的 FITS 文件头查看与编辑能力直接带入您的网页浏览器：
 - **100% 本地运行与隐私保护**：文件解析和处理均在浏览器本地完成，天文图像与元数据绝不上传到任何服务器。
 - **免安装随开即用**：支持 Windows、macOS、Linux、平板等任何配备现代浏览器的设备。
 - **实时文件头编辑**：实时增、删、改、排 80 字符标准 FITS 卡片。
@@ -24,7 +24,7 @@
 
 ### 1. 导入 FITS 文件
 
-打开 [FITS Header Editor Online](https://abctool.info/fits-header-editor-online/)，首先看到的是文件导入界面：
+打开 [FITS Header Editor Online](https://abctool.info/fits-header-editor-online/zh/)，首先看到的是文件导入界面：
 
 ![FITS Header Editor Online - 文件导入界面](./src/img/1-fits-header-viewer-editor.png)
 
@@ -92,4 +92,4 @@
 
 ## 访问在线工具
 
-👉 立即在浏览器中使用：**[https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)**
+👉 立即在浏览器中使用：**[https://abctool.info/fits-header-editor-online/zh/](https://abctool.info/fits-header-editor-online/zh/)**

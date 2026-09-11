@@ -2,7 +2,7 @@
 
 > 天文学の **FITS**（`.fits`, `.fit`, `.fts`）ヘッダーメタデータを、ブラウザ上で高速かつ安全に確認・編集・追加・エクスポートできるオンラインツールです（クライアント側で完全動作）。
 >
-> 🔗 **オンラインツール**: [https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)
+> 🔗 **オンラインツール**: [https://abctool.info/fits-header-editor-online/ja/](https://abctool.info/fits-header-editor-online/ja/)
 >
 > 🌐 [English](README.md) | [Español](README.es.md) | [中文](README.zh.md) | **日本語**
 
@@ -12,7 +12,7 @@
 
 従来、天文学の FITS ヘッダーメタデータを閲覧・編集するには、重いデスクトップ専用ソフトウェア（SAOImage DS9、AstroImageJ、PixInsight など）をインストールするか、Python の `astropy.io.fits` スクリプトを実行する必要がありました。
 
-**[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/)** は、ブラウザ上だけで完結する FITS ヘッダーの閲覧・編集環境を提供します：
+**[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/ja/)** は、ブラウザ上だけで完結する FITS ヘッダーの閲覧・編集環境を提供します：
 - **100% クライアント側動作・高いプライバシー性**：ファイル解析や処理はすべてブラウザ内部で実行されます。天体画像データが外部サーバーにアップロードされることは一切ありません。
 - **インストール不要**：モダンブラウザを搭載したあらゆるデバイス（Windows、macOS、Linux、タブレット）ですぐに使用できます。
 - **リアルタイム編集**：80 文字の標準 FITS カードをリアルタイムで追加・変更・並べ替え・削除可能。
@@ -24,7 +24,7 @@
 
 ### 1. FITS ファイルの読み込み
 
-[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/) を開くと、ファイル読み込み画面が表示されます：
+[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/ja/) を開くと、ファイル読み込み画面が表示されます：
 
 ![FITS Header Editor Online - 読み込み画面](./src/img/1-fits-header-viewer-editor.png)
 
@@ -92,4 +92,4 @@
 
 ## オンラインツールへのアクセス
 
-👉 ブラウザですぐに利用可能：**[https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)**
+👉 ブラウザですぐに利用可能：**[https://abctool.info/fits-header-editor-online/ja/](https://abctool.info/fits-header-editor-online/ja/)**

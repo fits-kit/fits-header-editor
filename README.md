@@ -93,3 +93,6 @@ When your edits are complete:
 ## Visit Tool
 
 👉 Launch tool directly in your browser: **[https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)**
+
+
+**[https://fits-kit.github.io/fits-header-editor/](https://fits-kit.github.io/fits-header-editor/)**

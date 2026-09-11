@@ -2,7 +2,7 @@
 
 > Una herramienta basada en navegador, rápida y segura para inspeccionar, editar, añadir y exportar metadatos de cabecera astronómicos **FITS** (`.fits`, `.fit`, `.fts`) directamente en el lado del cliente.
 >
-> 🔗 **Herramienta Online**: [https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)
+> 🔗 **Herramienta Online**: [https://abctool.info/fits-header-editor-online/es/](https://abctool.info/fits-header-editor-online/es/)
 >
 > 🌐 [English](README.md) | **Español** | [中文](README.zh.md) | [日本語](README.ja.md)
 
@@ -12,7 +12,7 @@
 
 Tradicionalmente, visualizar y editar los metadatos astronómicos de archivos FITS requería instalar software de escritorio pesado (como SAOImage DS9, AstroImageJ, PixInsight) o ejecutar scripts de Python con `astropy.io.fits`.
 
-**[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/)** lleva la capacidad completa de visualización y edición de cabeceras FITS directamente a su navegador web:
+**[FITS Header Editor Online](https://abctool.info/fits-header-editor-online/es/)** lleva la capacidad completa de visualización y edición de cabeceras FITS directamente a su navegador web:
 - **100% en el lado del cliente y privado**: Los archivos se analizan y procesan completamente en su navegador. Ningún dato astronómico se sube a servidores externos.
 - **Sin instalación**: Funciona de forma instantánea en cualquier dispositivo (Windows, macOS, Linux, tablet) con un navegador web moderno.
 - **Edición en tiempo real**: Añada, modifique, reordene o elimine tarjetas estándar de 80 caracteres en tiempo real.
@@ -24,7 +24,7 @@ Tradicionalmente, visualizar y editar los metadatos astronómicos de archivos FI
 
 ### 1. Cargar el Archivo FITS
 
-Abra [FITS Header Editor Online](https://abctool.info/fits-header-editor-online/). Verá la pantalla inicial de carga:
+Abra [FITS Header Editor Online](https://abctool.info/fits-header-editor-online/es/). Verá la pantalla inicial de carga:
 
 ![FITS Header Editor Online - Pantalla de carga](./src/img/1-fits-header-viewer-editor.png)
 
@@ -92,4 +92,4 @@ Una vez terminadas las modificaciones:
 
 ## Acceder a la Herramienta
 
-👉 Utilice la herramienta directamente en su navegador: **[https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)**
+👉 Utilice la herramienta directamente en su navegador: **[https://abctool.info/fits-header-editor-online/es/](https://abctool.info/fits-header-editor-online/es/)**
