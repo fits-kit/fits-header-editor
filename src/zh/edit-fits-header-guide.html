@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How to Edit & Fix Astronomical FITS Headers: Practical Troubleshooting Guide</title>
-  <meta name="description" content="Step-by-step practical guide on editing and diagnosing FITS header metadata for astrophotographers and researchers. Learn to fix plate-solving, Bayer pattern, and exposure errors.">
-  <meta name="author" content="Observational Astrophotography Technical Group">
+  <title>如何编辑与修复天文 FITS 文件头：实战排错与操作指南</title>
+  <meta name="description" content="面向天文摄影爱好者与科研人员的 FITS 文件头元数据编辑与排错实战指南。解决盲解算失败、拜耳阵列色彩偏离及曝光时间丢失问题。">
+  <meta name="author" content="天文摄影技术组">
   <style>
     :root {
       --primary: #2563eb;
@@ -45,7 +45,6 @@
       margin: 2rem auto 4rem auto;
     }
 
-    /* Header & Navigation */
     header {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -162,7 +161,6 @@
       color: var(--text-main);
     }
 
-    /* Cards */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -196,7 +194,6 @@
       color: #334155;
     }
 
-    /* Problem / Solution Grid */
     .trouble-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -230,7 +227,6 @@
       margin-top: 0.75rem;
     }
 
-    /* Table */
     .table-container {
       overflow-x: auto;
       margin: 1.75rem 0;
@@ -270,7 +266,6 @@
       background: #f8fafc;
     }
 
-    /* Screenshots */
     .screenshot-box {
       margin: 2rem 0;
       background: #f8fafc;
@@ -360,107 +355,103 @@
 
   <div class="container">
     
-    <!-- Top Navigation -->
     <header>
       <div class="nav-bar">
         <a href="index.html" class="brand">
-          🔭 FITS Metadata Lab
+          🔭 FITS 文件头实验室
         </a>
         <div class="nav-links">
-          <a href="index.html">Overview & Comparison</a>
-          <a href="edit-fits-header-guide.html" class="active">Practical Editing Guide</a>
-          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">Open Online Tool ↗</a>
+          <a href="index.html">概览与软件对比</a>
+          <a href="edit-fits-header-guide.html" class="active">实战修复指南</a>
+          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">打开在线工具 ↗</a>
           <div class="lang-switcher">
             🌐 
-            <a href="edit-fits-header-guide.html" class="active">EN</a> |
-            <a href="zh/edit-fits-header-guide.html">中文</a> |
-            <a href="es/edit-fits-header-guide.html">ES</a> |
-            <a href="ja/edit-fits-header-guide.html">JA</a>
+            <a href="../edit-fits-header-guide.html">EN</a> |
+            <a href="edit-fits-header-guide.html" class="active">中文</a> |
+            <a href="../es/edit-fits-header-guide.html">ES</a> |
+            <a href="../ja/edit-fits-header-guide.html">JA</a>
           </div>
         </div>
       </div>
 
-      <h1>Practical Field Guide: How to Inspect & Edit Astronomical FITS Metadata</h1>
-      <p class="subtitle">A hands-on troubleshooting guide for resolving stacking failures, debayer errors, plate-solving issues, and mislabeled filter tags in astronomical FITS files.</p>
+      <h1>天文 FITS 文件头实战指南：如何检查与修复拍摄元数据</h1>
+      <p class="subtitle">针对深空天文摄影与台站观测中的堆栈报错、去马赛克偏色、盲解算失败与滤镜标签遗失的手把手排查手册。</p>
 
       <div class="eeat-badge">
         <div class="eeat-avatar">DOC</div>
         <div class="eeat-meta">
-          <strong>Field Tested by:</strong> Observational Astrophotography Technical Team<br>
-          <strong>Focus Area:</strong> Real-world FITS Header Repair & Calibration Workflows | <strong>Year:</strong> 2026
+          <strong>一线实测支持：</strong> 天文摄影技术支持团队<br>
+          <strong>主攻方向：</strong> 真实工作流中的 FITS 文件头修复与校准 | <strong>年份：</strong> 2026
         </div>
       </div>
     </header>
 
-    <!-- Why Header Metadata Breaks -->
     <section class="card">
-      <h2>⚠️ Common Real-World Scenarios Requiring Header Editing</h2>
-      <p>Whether you capture data with N.I.N.A., ASIAIR, KStars/Ekos, or proprietary observatory software, metadata errors frequently corrupt post-processing pipelines. Below are the most frequent issues experienced astronomers encounter:</p>
+      <h2>⚠️ 实际拍摄中常见的文件头损坏场景</h2>
+      <p>无论您使用的是 N.I.N.A.、ASIAIR、KStars/Ekos 还是天文台自研拍摄终端，设备驱动异常或配置失误经常导致关键元数据缺失：</p>
 
       <div class="trouble-grid">
         <div class="trouble-card">
-          <h4>❌ Missing or Corrupt BAYERPAT</h4>
-          <p>Color cameras (OSC) require a valid <code>BAYERPAT</code> (e.g. <code>RGGB</code>, <code>BGGR</code>). If missing, Siril or PixInsight produces monochromatic or inverted color images during debayering.</p>
-          <div class="solution"><strong>Fix:</strong> Add or edit the <code>BAYERPAT</code> keyword to match your sensor's color filter array pattern.</div>
+          <h4>❌ BAYERPAT 拜耳阵列缺失或识别错误</h4>
+          <p>彩色天文相机（OSC）需要依赖 <code>BAYERPAT</code>（如 <code>RGGB</code>、<code>BGGR</code>）。若该卡片缺失，Siril 或 PixInsight 在去马赛克后将输出偏色或单色画面。</p>
+          <div class="solution"><strong>解决方法：</strong>在编辑器中添加或修改 <code>BAYERPAT</code> 为感光元件对应的阵列名称。</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Plate-Solving Failures (WCS / Scale)</h4>
-          <p>Plate solvers (ASTAP, ASTROMETRY.NET) fail when telescope focal length (<code>FOCALLEN</code>) or sensor pixel size (<code>PIXSIZE</code> / <code>XPIXSZ</code>) are zero or incorrectly recorded.</p>
-          <div class="solution"><strong>Fix:</strong> Correct the exact optical parameters directly in the header table.</div>
+          <h4>❌ 盲解算（Plate Solving）失败</h4>
+          <p>解算软件（ASTAP、ASTROMETRY.NET）在望远镜焦距（<code>FOCALLEN</code>）或像元尺寸（<code>PIXSIZE</code>）为 0 或记录错误时无法推断视场。</p>
+          <div class="solution"><strong>解决方法：</strong>直接在卡片表格中补全焦距与像元微米数值。</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Unassigned Filter Metadata in LRGB / SHO</h4>
-          <p>Mono imaging sequences occasionally lose the <code>FILTER</code> tag, causing automated stacking tools to blend Narrowband Ha with Luminance or Red channels.</p>
-          <div class="solution"><strong>Fix:</strong> Set the exact filter name (e.g., <code>Ha 3nm</code>, <code>OIII</code>, <code>Lum</code>) on all relevant subframes.</div>
+          <h4>❌ 多通道拍摄中丢失 FILTER 标签</h4>
+          <p>黑白冷冻相机拍摄 LRGB / 窄带序列时，若滤镜轮通信异常可能遗漏 <code>FILTER</code>，导致批处理堆栈软件将 Ha 误并入亮通道。</p>
+          <div class="solution"><strong>解决方法：</strong>为对应的单帧子图补充确切的滤镜名称（如 <code>Ha 3nm</code>、<code>OIII</code>）。</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Inconsistent Exposure Time (EXPTIME)</h4>
-          <p>When stacking with sigma-clipping or exposure weighting, zero or mismatched <code>EXPTIME</code> values distort signal-to-noise ratio (SNR) algorithms.</p>
-          <div class="solution"><strong>Fix:</strong> Recalibrate the numeric exposure time in seconds.</div>
+          <h4>❌ 曝光时间 EXPTIME 记录为 0</h4>
+          <p>在根据信噪比权重进行 Sigma-Clipping 堆叠时，错误的曝光时间会严重干扰算法权重的分配。</p>
+          <div class="solution"><strong>解决方法：</strong>以秒为单位校正数值型曝光时间字段。</div>
         </div>
       </div>
     </section>
 
-    <!-- Visual Walkthrough -->
     <section class="card">
-      <h2>🛠️ Visual Step-by-Step Walkthrough</h2>
-      <p>Here is how you can inspect and modify these parameters safely using the zero-friction online editor:</p>
+      <h2>🛠️ 图文排查与修复步骤</h2>
+      <p>通过浏览器在线工具，可以极其安全直观地完成修复，完全无需打开复杂的命令行或重型工具：</p>
 
-      <h3>Step 1: Open and Inspect the File</h3>
-      <p>Load your subframe or master light into the browser. The file is parsed completely client-side:</p>
-
-      <div class="screenshot-box">
-        <img src="./img/1-fits-header-viewer-editor.png" alt="Loading FITS file into the editor" width="850">
-        <div class="caption">Figure 1: Client-side file selection interface. Drag your target file or load the sample data to test.</div>
-      </div>
-
-      <h3>Step 2: Locate, Modify, or Add Missing Keywords</h3>
-      <p>Use the structured table to make instant changes without writing scripts or opening terminal windows:</p>
+      <h3>步骤 1：导入目标 FITS 文件</h3>
+      <p>将单帧原始照片或已校准的合成图载入网页。文件解析完全在本地浏览器内存中完成：</p>
 
       <div class="screenshot-box">
-        <img src="./img/2-fits-header-editor-ui.png" alt="Editing FITS header cards" width="850">
-        <div class="caption">Figure 2: The interactive editor table displaying cards, types, values, comments, and quick helper injection buttons.</div>
+        <img src="../img/1-fits-header-viewer-editor.png" alt="导入 FITS 文件界面" width="850">
+        <div class="caption">图 1：文件拖拽导入界面，支持即时读取与样本测试。</div>
       </div>
 
-      <p><strong>Pro-Tip for Fast Editing:</strong> Click the <strong>Quick Helpers</strong> buttons at the top of the table (such as <code>+ OBJECT</code>, <code>+ EXPTIME</code>, <code>+ FILTER</code>, <code>+ BAYERPAT</code>, <code>+ GAIN</code>). The editor automatically fills the standardized keyword name and opens the input field with the proper data type pre-selected.</p>
+      <h3>步骤 2：定位、修改或补充缺失关键字</h3>
+      <p>在清晰规整的表格中修改参数，不必担心排版错乱或行长超出规范：</p>
+
+      <div class="screenshot-box">
+        <img src="../img/2-fits-header-editor-ui.png" alt="编辑 FITS 文件头卡片" width="850">
+        <div class="caption">图 2：交互表格展示关键字、类型、值与注释，并配有快捷添加按钮。</div>
+      </div>
+
+      <p><strong>高效编辑小贴士：</strong>利用顶部预设的 <strong>Quick Helpers</strong> 快捷按钮（如 <code>+ OBJECT</code>、<code>+ EXPTIME</code>、<code>+ FILTER</code>、<code>+ BAYERPAT</code>、<code>+ GAIN</code>），系统会自动填充标准名称并预选匹配的数据类型。</p>
     </section>
 
-    <!-- Standard Astronomical Keywords Reference Table -->
     <section class="card">
-      <h2>📖 Standard Astronomical FITS Keywords Reference Table</h2>
-      <p>Refer to this reference when modifying standard header cards to maintain compatibility with NASA and IAU guidelines:</p>
+      <h2>📖 天文常用 FITS 关键字段权威速查表</h2>
+      <p>编辑标准卡片时可参考下表，以确保修改内容完全符合 IAU 与 NASA 标准规范：</p>
 
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>FITS Keyword</th>
-              <th>Data Type</th>
-              <th>Example Standard Value</th>
-              <th>Scientific Description & Function</th>
+              <th>FITS 关键字</th>
+              <th>数据类型</th>
+              <th>推荐标准值示例</th>
+              <th>科学含义与功能说明</th>
             </tr>
           </thead>
           <tbody>
@@ -468,83 +459,81 @@
               <td><code>SIMPLE</code></td>
               <td>Boolean</td>
               <td><code>T</code></td>
-              <td>Indicates whether the file conforms strictly to the standard FITS specification. Must be first card.</td>
+              <td>表明文件是否严格符合标准 FITS 规范。必须位于首张卡片。</td>
             </tr>
             <tr>
               <td><code>BITPIX</code></td>
               <td>Integer</td>
               <td><code>16</code> / <code>-32</code></td>
-              <td>Bits per data pixel (16 = unsigned/signed short; -32 = single-precision IEEE float).</td>
+              <td>每像素位深（16 代表无符号/有符号短整数；-32 代表单精度浮点数）。</td>
             </tr>
             <tr>
               <td><code>NAXIS</code></td>
               <td>Integer</td>
-              <td><code>2</code> (or <code>3</code>)</td>
-              <td>Number of coordinate axes (2 for 2D astronomical image; 3 for datacubes/RGB).</td>
+              <td><code>2</code> (或 <code>3</code>)</td>
+              <td>坐标轴数量（2 代表普通 2D 图像；3 代表三维数据立方体或 RGB 阵列）。</td>
             </tr>
             <tr>
               <td><code>OBJECT</code></td>
               <td>String</td>
-              <td><code>'M42 Orion Nebula'</code></td>
-              <td>Target celestial object name for cataloging and project identification.</td>
+              <td><code>'M42 Orion'</code></td>
+              <td>目标天体名称，用于目录编目与后期归档检索。</td>
             </tr>
             <tr>
               <td><code>EXPTIME</code></td>
               <td>Float / Number</td>
               <td><code>300.0</code></td>
-              <td>Total exposure duration of the observation measured in seconds.</td>
+              <td>总单帧曝光时长，单位恒定为秒（Seconds）。</td>
             </tr>
             <tr>
               <td><code>FILTER</code></td>
               <td>String</td>
-              <td><code>'Ha'</code>, <code>'OIII'</code>, <code>'Luminance'</code></td>
-              <td>Optical filter utilized during the capture sequence.</td>
+              <td><code>'Ha'</code>, <code>'OIII'</code></td>
+              <td>拍摄该帧时所使用的光学滤镜名称。</td>
             </tr>
             <tr>
               <td><code>BAYERPAT</code></td>
               <td>String</td>
               <td><code>'RGGB'</code> / <code>'BGGR'</code></td>
-              <td>CFA (Color Filter Array) pattern required for proper debayering.</td>
+              <td>色彩滤波阵列排列模式，用于彩色传感器去马赛克插值。</td>
             </tr>
             <tr>
               <td><code>FOCALLEN</code></td>
               <td>Float / Number</td>
               <td><code>800.0</code></td>
-              <td>Effective focal length of the telescope/lens optical train in millimeters.</td>
+              <td>望远镜/镜头的有效光学焦距，单位为毫米（mm）。</td>
             </tr>
             <tr>
               <td><code>PIXSIZE</code></td>
               <td>Float / Number</td>
               <td><code>3.76</code></td>
-              <td>Physical pixel pitch of the sensor active area in microns (μm).</td>
+              <td>相机感光元件每个像素的物理微米尺寸（μm）。</td>
             </tr>
             <tr>
               <td><code>GAIN</code></td>
               <td>Integer / Float</td>
               <td><code>100</code></td>
-              <td>Sensor amplifier gain setting utilized during frame acquisition.</td>
+              <td>拍摄时相机传感器所使用的增益数值。</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- Call to Action Banner -->
     <div class="cta-container">
-      <h3>Fix Your FITS Headers Online</h3>
-      <p>Clean, correct, and re-export your astrophotography files in seconds with zero server uploads.</p>
-      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">Open FITS Header Editor Online ↗</a>
+      <h3>立即在线修复您的 FITS 文件头</h3>
+      <p>即时修改，无需等待重装环境，一键保存并导出标准合规文件。</p>
+      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">打开 FITS 在线编辑器 ↗</a>
     </div>
 
-    <!-- Related Links -->
     <section class="card">
-      <h2>🔗 Related Resources</h2>
-      <p>Check out our comprehensive tool comparison: <a href="index.html" style="font-weight: 600; color: var(--primary);">Desktop Pro Software vs. Python Astropy vs. Online Browser Tool →</a></p>
+      <h2>🔗 相关资源推荐</h2>
+      <p>查看三大工具深度测评：<a href="index.html" style="font-weight: 600; color: var(--primary);">专业桌面软件 vs. Python 脚本 vs. 纯浏览器在线工具全面对比 →</a></p>
     </section>
 
     <footer>
-      <p>© 2026 FITS Metadata Standards Lab. Dedicated to open, accessible astronomical data processing.</p>
-      <p style="margin-top: 0.5rem; font-size: 0.82rem;">Standard guidelines in accordance with NASA FITS Standard V4.0.</p>
+      <p>© 2026 FITS Metadata Standards Lab. 助力天文学观测与数据标准化处理。</p>
+      <p style="margin-top: 0.5rem; font-size: 0.82rem;">本指南依据 NASA FITS Standard V4.0 编制。</p>
     </footer>
 
   </div>

@@ -75,18 +75,45 @@
       gap: 0.5rem;
     }
 
+    .nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
     .nav-links a {
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.95rem;
       font-weight: 500;
-      margin-left: 1.25rem;
       transition: color 0.2s;
     }
 
     .nav-links a:hover, .nav-links a.active {
       color: var(--primary);
       font-weight: 600;
+    }
+
+    .lang-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f1f5f9;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
+
+    .lang-switcher a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .lang-switcher a.active {
+      color: var(--primary);
+      font-weight: 700;
     }
 
     h1 {
@@ -349,6 +376,13 @@
           <a href="index.html" class="active">Overview & Comparison</a>
           <a href="edit-fits-header-guide.html">Practical Editing Guide</a>
           <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">Open Online Tool ↗</a>
+          <div class="lang-switcher">
+            🌐 
+            <a href="index.html" class="active">EN</a> |
+            <a href="zh/index.html">中文</a> |
+            <a href="es/index.html">ES</a> |
+            <a href="ja/index.html">JA</a>
+          </div>
         </div>
       </div>
 

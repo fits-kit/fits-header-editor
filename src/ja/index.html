@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FITSヘッダーをオンラインで確認・編集する方法：ソフトウェア徹底比較ガイド (E-E-A-T)</title>
+  <meta name="description" content="天文学FITSヘッダーメタデータの確認・編集に関する権威あるガイド。PixInsightやDS9などのデスクトップ製品、Python（Astropy）、ブラウザオンラインツールの比較。">
+  <meta name="author" content="天体観測データ解析エンジニアリング">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.7;
+      color: var(--text-main);
+      background-color: var(--bg-page);
+      padding: 0 1rem;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 2rem auto 4rem auto;
+    }
+
+    header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .lang-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f1f5f9;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
+
+    .lang-switcher a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .lang-switcher a.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .eeat-badge {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .eeat-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #bfdbfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .eeat-meta strong {
+      color: var(--text-main);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    p {
+      margin-bottom: 1.2rem;
+      color: #334155;
+    }
+
+    .callout {
+      background: #f0fdf4;
+      border-left: 4px solid var(--success);
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      color: #166534;
+    }
+
+    .callout strong {
+      color: #14532d;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 1.75rem 0;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-main);
+      font-weight: 600;
+      padding: 1rem 1.2rem;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .tag-green { background: #dcfce7; color: #15803d; }
+    .tag-blue { background: #dbeafe; color: #1d4ed8; }
+    .tag-amber { background: #fef3c7; color: #b45309; }
+    .tag-red { background: #fee2e2; color: #b91c1c; }
+
+    .screenshot-box {
+      margin: 2rem 0;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .screenshot-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      box-shadow: var(--shadow);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .caption {
+      margin-top: 0.75rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    ol.steps-list {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    ol.steps-list li {
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+      color: #334155;
+    }
+
+    .cta-container {
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      color: #ffffff;
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      text-align: center;
+      margin: 3rem 0;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .cta-container h3 {
+      color: #ffffff;
+      font-size: 1.75rem;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta-container p {
+      color: #e0e7ff;
+      max-width: 600px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .cta-btn:hover {
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--code-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <header>
+      <div class="nav-bar">
+        <a href="index.html" class="brand">
+          🔭 FITS メタデータラボ
+        </a>
+        <div class="nav-links">
+          <a href="index.html" class="active">概要とソフト比較</a>
+          <a href="edit-fits-header-guide.html">実践修復ガイド</a>
+          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">オンラインツール ↗</a>
+          <div class="lang-switcher">
+            🌐 
+            <a href="../index.html">EN</a> |
+            <a href="../zh/index.html">中文</a> |
+            <a href="../es/index.html">ES</a> |
+            <a href="index.html" class="active">JA</a>
+          </div>
+        </div>
+      </div>
+
+      <h1>FITSヘッダーの確認と編集：各種ソフトウェア比較とオンラインツール活用法</h1>
+      <p class="subtitle">観測データ専門家による技術レビュー：デスクトップ専用ソフト、Pythonスクリプト、最新のブラウザWebAssemblyツールの比較分析。</p>
+
+      <div class="eeat-badge">
+        <div class="eeat-avatar">EXP</div>
+        <div class="eeat-meta">
+          <strong>執筆・監修：</strong> 天体観測データ処理エンジニアリングチーム<br>
+          <strong>準拠規格：</strong> IAU FITS Standard 4.0 / NASA FITS サポートオフィス | <strong>更新：</strong> 2026年
+        </div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>📌 要点まとめ（E-E-A-T エグゼクティブサマリー）</h2>
+      <p><strong>FITS（Flexible Image Transport System）</strong>は、1981年以来、天文学における世界共通のデータ標準フォーマットです。すべての天体画像や分光データには、座標、センサーゲイン、フィルター、光学系を記録した80文字単位の標準カードが含まれています。</p>
+      
+      <div class="callout">
+        <strong>結論：</strong> カードの確認、プレートソルブ失敗の診断、欠落したメタデータ（<code>OBJECT</code>、<code>EXPTIME</code>、<code>FILTER</code>など）の修正のみを行う場合、1.5GBを超えるPixInsightの起動やPython環境の構築は過剰です。<strong><a href="https://abctool.info/fits-header-editor-online/" target="_blank">FITS Header Editor Online</a></strong>なら、インストール不要・サーバー送信なしで、ブラウザ内で100%安全かつ即座に処理が完了します。
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>⚖️ 徹底比較：専用デスクトップソフト vs. Python vs. ブラウザツール</h2>
+      <p>ディスク占有容量、セットアップの手間、プライバシー保護、操作性の4つの観点から比較します：</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>比較項目</th>
+              <th>天体用デスクトップ製品<br><small>(PixInsight, SAOImage DS9)</small></th>
+              <th>Pythonプログラミング<br><small>(astropy.io.fits)</small></th>
+              <th>ブラウザオンラインツール<br><small>(abctool.info/fits-header-editor-online/)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ディスク容量 (サイズ)</strong></td>
+              <td>
+                <span class="tag tag-red">非常に重い (~80MB – 1.8GB+)</span><br>
+                DS9は約80MB、PixInsightは1.5GB以上とスワップ領域が必要です。
+              </td>
+              <td>
+                <span class="tag tag-amber">中程度 (~250MB – 600MB)</span><br>
+                Python環境、NumPy、Astropyライブラリ一式が必要です。
+              </td>
+              <td>
+                <span class="tag tag-green">容量ゼロ (0 MB)</span><br>
+                WebAssembly/JS技術によりブラウザ上で直接動作します。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>導入の手間</strong></td>
+              <td>
+                インストーラーの実行、管理者権限、有償ライセンス設定が必要。
+              </td>
+              <td>
+                コマンドライン操作、<code>pip install astropy</code>、スクリプト作成が必要。
+              </td>
+              <td>
+                <span class="tag tag-green">即座に利用可能 (0秒)</span><br>
+                Webページを開いてファイルをドラッグ＆ドロップするだけ。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>データの安全性とプライバシー</strong></td>
+              <td>
+                <span class="tag tag-green">100% ローカル</span><br>
+                ローカルマシンで処理。
+              </td>
+              <td>
+                <span class="tag tag-green">100% ローカル</span><br>
+                自作スクリプトで処理。
+              </td>
+              <td>
+                <span class="tag tag-green">100% クライアント完結</span><br>
+                ブラウザメモリ内で処理し、外部サーバーへ送信しません。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>カードの視覚的編集と検証</strong></td>
+              <td>
+                複数ウィンドウ構成。フォーマット崩れに注意が必要。
+              </td>
+              <td>
+                辞書型のように代入可能だが、ファイル書き出しコードが必要。
+              </td>
+              <td>
+                <span class="tag tag-green">インタラクティブなテーブル</span><br>
+                ブール値のドロップダウン、80文字制限の自動検証、並べ替え対応。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>クイック追加ボタン</strong></td>
+              <td>
+                手動でキー名とコメントを入力。
+              </td>
+              <td>
+                IAU標準カード名をコード内で覚える必要がある。
+              </td>
+              <td>
+                <span class="tag tag-green">ワンクリック補助</span><br>
+                <code>+ OBJECT</code>、<code>+ EXPTIME</code>、<code>+ FILTER</code> などの専用ボタン。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>マルチプラットフォーム対応</strong></td>
+              <td>
+                デスクトップ限定（Windows, Mac, Linux）。タブレット不可。
+              </td>
+              <td>
+                サーバーおよび開発環境限定。
+              </td>
+              <td>
+                <span class="tag tag-green">全デバイス対応</span><br>
+                Windows、Mac、iPad、Linux、Chromebookで動作。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>エクスポート機能</strong></td>
+              <td>
+                プロジェクト全体または上書き保存。
+              </td>
+              <td>
+                JSONやテキスト出力用のコード作成が必要。
+              </td>
+              <td>
+                更新後の <code>.fits</code> ダウンロード、<code>JSON</code> や <code>TXT</code> 出力に対応。
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🔍 ステップ1：FITSヘッダーを即座に確認する</h2>
+      <p>スタックソフト（Siril、DeepSkyStackerなど）で位置合わせに失敗した場合、最初の原因調査はヘッダーの確認です：</p>
+
+      <ol class="steps-list">
+        <li><strong><a href="https://abctool.info/fits-header-editor-online/" target="_blank">FITS Header Editor Online</a></strong> を開きます。</li>
+        <li>FITSファイル（<code>.fits</code>、<code>.fit</code>、<code>.fts</code>）を点線枠内にドラッグ＆ドロップするか、<strong>Select FITS File</strong> をクリックします。</li>
+        <li>お試し用の場合は、<strong>Load Sample FITS</strong> をクリックしてサンプルデータ（<code>13838SgrA.fits</code>）を読み込みます。</li>
+      </ol>
+
+      <div class="screenshot-box">
+        <img src="../img/1-fits-header-viewer-editor.png" alt="FITS Header Editor 読み込み画面" width="850">
+        <div class="caption">図1：サーバーへのアップロード不要で安全にファイルを読み込める画面。</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>✏️ ステップ2：ヘッダーカードの編集・追加・並べ替え</h2>
+      <p>読み込み後、標準80桁のFITSカードが一覧表示されます：</p>
+
+      <div class="screenshot-box">
+        <img src="../img/2-fits-header-editor-ui.png" alt="FITSヘッダー編集テーブル" width="850">
+        <div class="caption">図2：リアルタイム検索、カテゴリ別絞り込み、クイックボタンを備えたエディター画面。</div>
+      </div>
+
+      <h3>便利な操作方法：</h3>
+      <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: #334155;">
+        <li style="margin-bottom: 0.5rem;"><strong>即時検索：</strong>検索バーにキー名（例: <code>CRVAL1</code>）や値を入力するだけで素早くカードを抽出できます。</li>
+        <li style="margin-bottom: 0.5rem;"><strong>安全なインライン変更：</strong>ブール値はドロップダウン（<code>T (True)</code> / <code>F (False)</code>）で切り替え可能。文字列や数値も桁あふれを防止します。</li>
+        <li style="margin-bottom: 0.5rem;"><strong>クイック追加：</strong>上部の <code>+ OBJECT</code>、<code>+ FILTER</code>、<code>+ BAYERPAT</code> などのボタンを押すだけで標準キーを自動挿入できます。</li>
+        <li style="margin-bottom: 0.5rem;"><strong>並べ替えと削除：</strong>右側の <code>↑</code> / <code>↓</code> で順序を変更し、<code>✕</code> で不要なカードを削除できます。</li>
+      </ul>
+
+      <h3>修正したファイルの保存：</h3>
+      <p>編集完了後、<strong>Save & Download FITS</strong> をクリックすると、2880バイト単位に整形されたヘッダーと画像データが結合され、標準規格に準拠した <code>.fits</code> ファイルがダウンロードされます。</p>
+    </section>
+
+    <div class="cta-container">
+      <h3>FITSヘッダーの確認・修正を今すぐ始める</h3>
+      <p>ソフトウェアのインストール不要、完全無料で安全にブラウザ上で作業できます。</p>
+      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">FITSオンラインエディターを開く ↗</a>
+    </div>
+
+    <section class="card" style="margin-top: 2rem;">
+      <h2>📚 関連ガイド</h2>
+      <p>ベイヤー配列やWCS座標の修復方法を詳しく解説した実践編もご覧ください：</p>
+      <p>👉 <a href="edit-fits-header-guide.html" style="font-weight: 600; color: var(--primary);">実践ガイド：天体写真のメタデータ修復手順（ベイヤー配列・WCS・露出時間） →</a></p>
+    </section>
+
+    <footer>
+      <p>© 2026 FITS Metadata Standards Lab. 世界中の天体観測者と天体写真家のために。</p>
+      <p style="margin-top: 0.5rem; font-size: 0.82rem;">NASA および IAU FITS Standard V4.0 に準拠。</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

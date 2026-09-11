@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>如何在线查看与编辑 FITS 文件头：专业软件横向评测与指南 (E-E-A-T)</title>
+  <meta name="description" content="天文学 FITS 头文件元数据查看与编辑权威指南。对比专业桌面软件（PixInsight、DS9）、Python 科学计算库（Astropy）以及纯浏览器端在线工具。">
+  <meta name="author" content="天文数据工程技术组">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --accent: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.07), 0 4px 6px -4px rgba(0,0,0,0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.7;
+      color: var(--text-main);
+      background-color: var(--bg-page);
+      padding: 0 1rem;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 2rem auto 4rem auto;
+    }
+
+    header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .lang-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f1f5f9;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      margin-left: 0.5rem;
+    }
+
+    .lang-switcher a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .lang-switcher a.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1.125rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .eeat-badge {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      margin-top: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .eeat-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #bfdbfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .eeat-meta strong {
+      color: var(--text-main);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 2.25rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    p {
+      margin-bottom: 1.2rem;
+      color: #334155;
+    }
+
+    .callout {
+      background: #f0fdf4;
+      border-left: 4px solid var(--success);
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      color: #166534;
+    }
+
+    .callout strong {
+      color: #14532d;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      margin: 1.75rem 0;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-main);
+      font-weight: 600;
+      padding: 1rem 1.2rem;
+      border-bottom: 2px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .tag-green { background: #dcfce7; color: #15803d; }
+    .tag-blue { background: #dbeafe; color: #1d4ed8; }
+    .tag-amber { background: #fef3c7; color: #b45309; }
+    .tag-red { background: #fee2e2; color: #b91c1c; }
+
+    .screenshot-box {
+      margin: 2rem 0;
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .screenshot-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      box-shadow: var(--shadow);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .caption {
+      margin-top: 0.75rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    ol.steps-list {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    ol.steps-list li {
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+      color: #334155;
+    }
+
+    .cta-container {
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      color: #ffffff;
+      padding: 2.5rem;
+      border-radius: var(--radius);
+      text-align: center;
+      margin: 3rem 0;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .cta-container h3 {
+      color: #ffffff;
+      font-size: 1.75rem;
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta-container p {
+      color: #e0e7ff;
+      max-width: 600px;
+      margin: 0 auto 1.5rem auto;
+    }
+
+    .cta-btn {
+      display: inline-block;
+      background: #ffffff;
+      color: var(--primary);
+      font-weight: 700;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .cta-btn:hover {
+      background: #f8fafc;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--code-bg);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <header>
+      <div class="nav-bar">
+        <a href="index.html" class="brand">
+          🔭 FITS 文件头实验室
+        </a>
+        <div class="nav-links">
+          <a href="index.html" class="active">概览与软件对比</a>
+          <a href="edit-fits-header-guide.html">实战修复指南</a>
+          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">打开在线工具 ↗</a>
+          <div class="lang-switcher">
+            🌐 
+            <a href="../index.html">EN</a> |
+            <a href="index.html" class="active">中文</a> |
+            <a href="../es/index.html">ES</a> |
+            <a href="../ja/index.html">JA</a>
+          </div>
+        </div>
+      </div>
+
+      <h1>如何查看与编辑 FITS 文件头：专业软件横向评测与在线工具指南</h1>
+      <p class="subtitle">由天文观测与管线数据工程师撰写的专业评测：全面对比专业桌面天文软件、Python 命令行脚本与现代浏览器 WebAssembly 工具。</p>
+
+      <div class="eeat-badge">
+        <div class="eeat-avatar">EXP</div>
+        <div class="eeat-meta">
+          <strong>编写与核准：</strong> 天文数据管线工程技术团队<br>
+          <strong>规范遵循：</strong> IAU FITS Standard 4.0 / NASA FITS 支持办公室 | <strong>更新年份：</strong> 2026
+        </div>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2>📌 核心摘要（E-E-A-T 关键提炼）</h2>
+      <p><strong>FITS（柔性图像传输系统）</strong>自 1981 年诞生以来一直是国际天文学界的通用标准格式。在每一张校准后的深空照片或光谱数据背后，都包含了一组 80 字符的标准卡片记录，记载着天球坐标、相机增益、滤镜通道与光学参数。</p>
+      
+      <div class="callout">
+        <strong>实战结论：</strong> 如果你仅需要检查文件头卡片、排查盲解算（Plate Solving）失败原因、或补充修改缺失的拍摄参数（如 <code>OBJECT</code>、<code>EXPTIME</code>、<code>FILTER</code>），为了轻量修改而打开体积高达 1.5 GB 的 PixInsight 或配置 Python 虚拟环境成本极高。<strong><a href="https://abctool.info/fits-header-editor-online/" target="_blank">FITS Header Editor 在线工具</a></strong>在浏览器本地完成 100% 计算，零安装、零上传、即改即导。
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>⚖️ 深度横向评测：专业桌面软件 vs. Python 脚本 vs. 在线工具</h2>
+      <p>为帮助天文摄影爱好者、科研学生与台站观测人员挑选最适宜的工具，以下从软件体积、安装配置门槛、数据隐私与操作便捷性四个维度进行全面对比：</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>对比维度</th>
+              <th>专业桌面天文套件<br><small>(PixInsight, SAOImage DS9)</small></th>
+              <th>科学计算脚本<br><small>(Python + astropy.io.fits)</small></th>
+              <th>纯浏览器在线工具<br><small>(abctool.info/fits-header-editor-online/)</small></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>软件占用大小 (磁盘体积)</strong></td>
+              <td>
+                <span class="tag tag-red">庞大 (~80 MB – 1.8+ GB)</span><br>
+                DS9 需 ~80 MB；PixInsight 需 1.5+ GB 磁盘与额外交换空间。
+              </td>
+              <td>
+                <span class="tag tag-amber">中等 (~250 MB – 600 MB)</span><br>
+                需安装 Python 环境、NumPy 与 Astropy 核心依赖库。
+              </td>
+              <td>
+                <span class="tag tag-green">零磁盘占用 (0 MB)</span><br>
+                基于现代化 WebAssembly/JS 在浏览器内纯前端执行。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>安装与上手门槛</strong></td>
+              <td>
+                需下载安装包、配置系统管理员权限及商业授权证书。
+              </td>
+              <td>
+                需终端基础，执行 <code>pip install astropy</code>、编写脚本。
+              </td>
+              <td>
+                <span class="tag tag-green">即开即用 (0 秒等待)</span><br>
+                打开网页即可直接拖入文件查看与编辑。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>数据隐私与安全</strong></td>
+              <td>
+                <span class="tag tag-green">100% 本地运行</span><br>
+                单机执行，无网络依赖。
+              </td>
+              <td>
+                <span class="tag tag-green">100% 本地运行</span><br>
+                本地脚本处理。
+              </td>
+              <td>
+                <span class="tag tag-green">100% 客户端本地安全</span><br>
+                通过 FileReader 在内存解析，绝不上传到任何服务器。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>卡片行内可视化编辑与校验</strong></td>
+              <td>
+                多窗口视窗复杂，修改单张卡片稍有不慎易导致格式溢出。
+              </td>
+              <td>
+                以字典形式赋值，但需手动编写文件重写与校验逻辑。
+              </td>
+              <td>
+                <span class="tag tag-green">交互式表格与规范校验</span><br>
+                布尔值下拉选择、80 字符自动排版、上下快捷调序。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>天文快捷助手</strong></td>
+              <td>
+                需手动输入键名与注释内容。
+              </td>
+              <td>
+                需记忆 IAU 标准卡片拼写。
+              </td>
+              <td>
+                <span class="tag tag-green">一键预设注入</span><br>
+                内置 <code>+ OBJECT</code>、<code>+ EXPTIME</code>、<code>+ FILTER</code>、<code>+ GAIN</code> 等按钮。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>跨平台与移动设备支持</strong></td>
+              <td>
+                仅限桌面端（Windows, macOS, Linux），不支持平板手机。
+              </td>
+              <td>
+                仅限服务器与桌面开发环境。
+              </td>
+              <td>
+                <span class="tag tag-green">全平台通用</span><br>
+                支持 Windows、Mac、iPad 平板、Linux 与 Chromebook。
+              </td>
+            </tr>
+            <tr>
+              <td><strong>多格式导出</strong></td>
+              <td>
+                通常保存为整体工程或覆盖原图。
+              </td>
+              <td>
+                需额外写代码导出为 JSON 或纯文本。
+              </td>
+              <td>
+                支持重新打包下载 <code>.fits</code>，或一键导出 <code>JSON</code> 与 <code>TXT</code>。
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>🔍 第一步：如何秒速查看 FITS 文件头</h2>
+      <p>当拍摄数据在堆栈软件（如 Siril、DeepSkyStacker、PixInsight）中报错无法对齐时，首要步骤是检查元数据。使用在线工具只需几秒：</p>
+
+      <ol class="steps-list">
+        <li>访问 <strong><a href="https://abctool.info/fits-header-editor-online/" target="_blank">FITS Header Editor 在线工具</a></strong>。</li>
+        <li>将原始或校准后的天文文件（<code>.fits</code>、<code>.fit</code>、<code>.fts</code>）直接拖入虚线框，或点击 <strong>Select FITS File</strong>。</li>
+        <li>若想快速体验，可点击 <strong>Load Sample FITS</strong> 加载预置样例（<code>13838SgrA.fits</code>）。</li>
+      </ol>
+
+      <div class="screenshot-box">
+        <img src="../img/1-fits-header-viewer-editor.png" alt="FITS Header Editor 文件导入界面" width="850">
+        <div class="caption">图 1：免安装、零服务器上传的本地文件读取与样例导入界面。</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>✏️ 第二步：如何编辑、添加与重排文件头卡片</h2>
+      <p>载入文件后，交互式表格将完整呈现所有 80 字符 FITS 记录，清晰展示序号、关键字、类型、值与说明：</p>
+
+      <div class="screenshot-box">
+        <img src="../img/2-fits-header-editor-ui.png" alt="FITS Header Editor 交互表格" width="850">
+        <div class="caption">图 2：交互式文件头编辑表格，支持即时搜索、功能分类过滤、天文快捷助手与上下调序操作。</div>
+      </div>
+
+      <h3>关键编辑功能：</h3>
+      <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; color: #334155;">
+        <li style="margin-bottom: 0.5rem;"><strong>即时搜索：</strong>在搜索栏直接输入关键字（如 <code>CRVAL1</code>）、参数值或注释，无需滚动即可直达对应行。</li>
+        <li style="margin-bottom: 0.5rem;"><strong>类型安全行内修改：</strong>布尔值提供便捷下拉框（<code>T (True)</code> / <code>F (False)</code>），数值与字符串均经自动截断校验，避免破坏 80 字符边界。</li>
+        <li style="margin-bottom: 0.5rem;"><strong>常用天文参数快捷键：</strong>点击上方 <code>+ OBJECT</code>、<code>+ FILTER</code>、<code>+ BAYERPAT</code> 或 <code>+ FOCALLEN</code> 即可自动按规范插入标准卡片。</li>
+        <li style="margin-bottom: 0.5rem;"><strong>卡片排序与清理：</strong>通过右侧 <code>↑</code> 和 <code>↓</code> 调整卡片顺序，点击 <code>✕</code> 快速删除多余记录。</li>
+      </ul>
+
+      <h3>导出修复后的文件：</h3>
+      <p>编辑完成后，点击 <strong>Save & Download FITS</strong>，浏览器前端会自动重新封装 2880 字节填充块，将更新后的文件头与原始二进制图像阵列打包，立即生成合规的 <code>.fits</code> 文件下载到本地。</p>
+    </section>
+
+    <div class="cta-container">
+      <h3>立即开始查看与修复您的 FITS 文件</h3>
+      <p>无须下载庞大软件，无须安装配置环境，保护隐私，100% 浏览器本地运算。</p>
+      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">立即打开 FITS 在线编辑器 ↗</a>
+    </div>
+
+    <section class="card" style="margin-top: 2rem;">
+      <h2>📚 深度进阶阅读</h2>
+      <p>想要排查深空堆栈中遇到的滤镜混乱、盲解算失败与拜耳阵列偏色？查看我们的实战排错手册：</p>
+      <p>👉 <a href="edit-fits-header-guide.html" style="font-weight: 600; color: var(--primary);">实战指南：如何排查与修复天文摄影常见 FITS 元数据错误（拜耳阵列、WCS 与曝光） →</a></p>
+    </section>
+
+    <footer>
+      <p>© 2026 FITS Metadata Standards Lab. 专为天文爱好者、科研人员与观测台站打造。</p>
+      <p style="margin-top: 0.5rem; font-size: 0.82rem;">遵循国际天文学联合会（IAU）FITS 工作组与 NASA 戈达德太空飞行中心标准规范。</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>

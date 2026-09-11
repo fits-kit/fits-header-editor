@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How to Edit & Fix Astronomical FITS Headers: Practical Troubleshooting Guide</title>
-  <meta name="description" content="Step-by-step practical guide on editing and diagnosing FITS header metadata for astrophotographers and researchers. Learn to fix plate-solving, Bayer pattern, and exposure errors.">
-  <meta name="author" content="Observational Astrophotography Technical Group">
+  <title>天体FITSヘッダーの編集と修復：実践的トラブルシューティングガイド</title>
+  <meta name="description" content="天体写真ファンや観測研究者のためのFITSヘッダー編集とトラブル解決ガイド。プレートソルブの失敗、ベイヤー配列の色ズレ、露出時間の欠落を修正。">
+  <meta name="author" content="天体写真技術サポートグループ">
   <style>
     :root {
       --primary: #2563eb;
@@ -45,7 +45,6 @@
       margin: 2rem auto 4rem auto;
     }
 
-    /* Header & Navigation */
     header {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -162,7 +161,6 @@
       color: var(--text-main);
     }
 
-    /* Cards */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -196,7 +194,6 @@
       color: #334155;
     }
 
-    /* Problem / Solution Grid */
     .trouble-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -230,7 +227,6 @@
       margin-top: 0.75rem;
     }
 
-    /* Table */
     .table-container {
       overflow-x: auto;
       margin: 1.75rem 0;
@@ -270,7 +266,6 @@
       background: #f8fafc;
     }
 
-    /* Screenshots */
     .screenshot-box {
       margin: 2rem 0;
       background: #f8fafc;
@@ -360,107 +355,103 @@
 
   <div class="container">
     
-    <!-- Top Navigation -->
     <header>
       <div class="nav-bar">
         <a href="index.html" class="brand">
-          🔭 FITS Metadata Lab
+          🔭 FITS メタデータラボ
         </a>
         <div class="nav-links">
-          <a href="index.html">Overview & Comparison</a>
-          <a href="edit-fits-header-guide.html" class="active">Practical Editing Guide</a>
-          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">Open Online Tool ↗</a>
+          <a href="index.html">概要とソフト比較</a>
+          <a href="edit-fits-header-guide.html" class="active">実践修復ガイド</a>
+          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">オンラインツール ↗</a>
           <div class="lang-switcher">
             🌐 
-            <a href="edit-fits-header-guide.html" class="active">EN</a> |
-            <a href="zh/edit-fits-header-guide.html">中文</a> |
-            <a href="es/edit-fits-header-guide.html">ES</a> |
-            <a href="ja/edit-fits-header-guide.html">JA</a>
+            <a href="../edit-fits-header-guide.html">EN</a> |
+            <a href="../zh/edit-fits-header-guide.html">中文</a> |
+            <a href="../es/edit-fits-header-guide.html">ES</a> |
+            <a href="edit-fits-header-guide.html" class="active">JA</a>
           </div>
         </div>
       </div>
 
-      <h1>Practical Field Guide: How to Inspect & Edit Astronomical FITS Metadata</h1>
-      <p class="subtitle">A hands-on troubleshooting guide for resolving stacking failures, debayer errors, plate-solving issues, and mislabeled filter tags in astronomical FITS files.</p>
+      <h1>天体FITSヘッダー実践ガイド：撮影メタデータの確認と修復手順</h1>
+      <p class="subtitle">ディープスカイ撮影や観測データにおけるスタックエラー、デベイヤー失敗、プレートソルブエラー、フィルタータグ欠落の対処法。</p>
 
       <div class="eeat-badge">
         <div class="eeat-avatar">DOC</div>
         <div class="eeat-meta">
-          <strong>Field Tested by:</strong> Observational Astrophotography Technical Team<br>
-          <strong>Focus Area:</strong> Real-world FITS Header Repair & Calibration Workflows | <strong>Year:</strong> 2026
+          <strong>現場検証：</strong> 天体写真技術サポートチーム<br>
+          <strong>対象領域：</strong> 実際のワークフローにおけるFITSヘッダー修復と較正 | <strong>年：</strong> 2026
         </div>
       </div>
     </header>
 
-    <!-- Why Header Metadata Breaks -->
     <section class="card">
-      <h2>⚠️ Common Real-World Scenarios Requiring Header Editing</h2>
-      <p>Whether you capture data with N.I.N.A., ASIAIR, KStars/Ekos, or proprietary observatory software, metadata errors frequently corrupt post-processing pipelines. Below are the most frequent issues experienced astronomers encounter:</p>
+      <h2>⚠️ 現場で頻発するヘッダー破損の典型例</h2>
+      <p>N.I.N.A.、ASIAIR、KStars/Ekos、天文台の自作システムなど、どの撮影環境でもメタデータ欠落による処理障害は頻繁に発生します：</p>
 
       <div class="trouble-grid">
         <div class="trouble-card">
-          <h4>❌ Missing or Corrupt BAYERPAT</h4>
-          <p>Color cameras (OSC) require a valid <code>BAYERPAT</code> (e.g. <code>RGGB</code>, <code>BGGR</code>). If missing, Siril or PixInsight produces monochromatic or inverted color images during debayering.</p>
-          <div class="solution"><strong>Fix:</strong> Add or edit the <code>BAYERPAT</code> keyword to match your sensor's color filter array pattern.</div>
+          <h4>❌ BAYERPAT（ベイヤー配列）の欠落・誤り</h4>
+          <p>カラーCMOSカメラ（OSC）では <code>BAYERPAT</code>（例: <code>RGGB</code>、<code>BGGR</code>）が必須です。欠落していると、SirilやPixInsightでデベイヤーした際に白黒化や色反転が発生します。</p>
+          <div class="solution"><strong>解決法：</strong>エディターでセンサー規格に合った <code>BAYERPAT</code> キーワードを追加または修正します。</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Plate-Solving Failures (WCS / Scale)</h4>
-          <p>Plate solvers (ASTAP, ASTROMETRY.NET) fail when telescope focal length (<code>FOCALLEN</code>) or sensor pixel size (<code>PIXSIZE</code> / <code>XPIXSZ</code>) are zero or incorrectly recorded.</p>
-          <div class="solution"><strong>Fix:</strong> Correct the exact optical parameters directly in the header table.</div>
+          <h4>❌ プレートソルブ（位置解析）の失敗</h4>
+          <p>ASTAPやASTROMETRY.NETは、望遠鏡の焦点距離（<code>FOCALLEN</code>）やピクセルサイズ（<code>PIXSIZE</code>）が0や不正値だと画角を推定できず失敗します。</p>
+          <div class="solution"><strong>解決法：</strong>正確な焦点距離（mm）とピクセルピッチ（μm）を入力します。</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Unassigned Filter Metadata in LRGB / SHO</h4>
-          <p>Mono imaging sequences occasionally lose the <code>FILTER</code> tag, causing automated stacking tools to blend Narrowband Ha with Luminance or Red channels.</p>
-          <div class="solution"><strong>Fix:</strong> Set the exact filter name (e.g., <code>Ha 3nm</code>, <code>OIII</code>, <code>Lum</code>) on all relevant subframes.</div>
+          <h4>❌ モノクロ撮影時の FILTER タグ紛失</h4>
+          <p>LRGBやナローバンド撮影で <code>FILTER</code> タグが抜けると、自動スタックツールがHαデータを輝度（Luminance）や赤チャンネルと混同します。</p>
+          <div class="solution"><strong>解決法：</strong>該当するサブフレームに正確なフィルター名（例: <code>Ha 3nm</code>, <code>OIII</code>）を付与します。</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Inconsistent Exposure Time (EXPTIME)</h4>
-          <p>When stacking with sigma-clipping or exposure weighting, zero or mismatched <code>EXPTIME</code> values distort signal-to-noise ratio (SNR) algorithms.</p>
-          <div class="solution"><strong>Fix:</strong> Recalibrate the numeric exposure time in seconds.</div>
+          <h4>❌ 露出時間 EXPTIME が 0 秒になっている</h4>
+          <p>シグマクリッピングなどで露出時間を加重平均する際、値が不正だとS/N比の計算が破綻します。</p>
+          <div class="solution"><strong>解決法：</strong>秒単位の数値として露出時間を再入力します。</div>
         </div>
       </div>
     </section>
 
-    <!-- Visual Walkthrough -->
     <section class="card">
-      <h2>🛠️ Visual Step-by-Step Walkthrough</h2>
-      <p>Here is how you can inspect and modify these parameters safely using the zero-friction online editor:</p>
+      <h2>🛠️ 画面キャプチャ付き修復手順</h2>
+      <p>ブラウザ上で直感的に安全に修復を行う手順です：</p>
 
-      <h3>Step 1: Open and Inspect the File</h3>
-      <p>Load your subframe or master light into the browser. The file is parsed completely client-side:</p>
-
-      <div class="screenshot-box">
-        <img src="./img/1-fits-header-viewer-editor.png" alt="Loading FITS file into the editor" width="850">
-        <div class="caption">Figure 1: Client-side file selection interface. Drag your target file or load the sample data to test.</div>
-      </div>
-
-      <h3>Step 2: Locate, Modify, or Add Missing Keywords</h3>
-      <p>Use the structured table to make instant changes without writing scripts or opening terminal windows:</p>
+      <h3>ステップ1：FITSファイルを読み込む</h3>
+      <p>対象のファイルをブラウザに読み込ませます。処理は端末内のメモリ上でのみ行われます：</p>
 
       <div class="screenshot-box">
-        <img src="./img/2-fits-header-editor-ui.png" alt="Editing FITS header cards" width="850">
-        <div class="caption">Figure 2: The interactive editor table displaying cards, types, values, comments, and quick helper injection buttons.</div>
+        <img src="../img/1-fits-header-viewer-editor.png" alt="FITSファイル読み込み画面" width="850">
+        <div class="caption">図1：ドラッグ＆ドロップまたはサンプル読み込みに対応した画面。</div>
       </div>
 
-      <p><strong>Pro-Tip for Fast Editing:</strong> Click the <strong>Quick Helpers</strong> buttons at the top of the table (such as <code>+ OBJECT</code>, <code>+ EXPTIME</code>, <code>+ FILTER</code>, <code>+ BAYERPAT</code>, <code>+ GAIN</code>). The editor automatically fills the standardized keyword name and opens the input field with the proper data type pre-selected.</p>
+      <h3>ステップ2：不足しているキーワードの特定と編集</h3>
+      <p>テーブル上で値を編集します。80桁の規格違反を気にすることなく安全に変更できます：</p>
+
+      <div class="screenshot-box">
+        <img src="../img/2-fits-header-editor-ui.png" alt="FITSヘッダーカード編集画面" width="850">
+        <div class="caption">図2：データ型、コメント、クイックボタンを備えたエディターテーブル。</div>
+      </div>
+
+      <p><strong>効率化のヒント：</strong>上部の <strong>Quick Helpers</strong> ボタン（<code>+ OBJECT</code>、<code>+ EXPTIME</code>、<code>+ FILTER</code>、<code>+ BAYERPAT</code>、<code>+ GAIN</code>）をクリックすると、標準キー名と推奨データ型が自動入力されます。</p>
     </section>
 
-    <!-- Standard Astronomical Keywords Reference Table -->
     <section class="card">
-      <h2>📖 Standard Astronomical FITS Keywords Reference Table</h2>
-      <p>Refer to this reference when modifying standard header cards to maintain compatibility with NASA and IAU guidelines:</p>
+      <h2>📖 天文学標準 FITS キーワード対応表</h2>
+      <p>IAUおよびNASAのガイドラインに準拠するための主要キーワード一覧です：</p>
 
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>FITS Keyword</th>
-              <th>Data Type</th>
-              <th>Example Standard Value</th>
-              <th>Scientific Description & Function</th>
+              <th>FITS キーワード</th>
+              <th>データ型</th>
+              <th>推奨標準値の例</th>
+              <th>科学的意味と機能説明</th>
             </tr>
           </thead>
           <tbody>
@@ -468,83 +459,81 @@
               <td><code>SIMPLE</code></td>
               <td>Boolean</td>
               <td><code>T</code></td>
-              <td>Indicates whether the file conforms strictly to the standard FITS specification. Must be first card.</td>
+              <td>標準FITS規格に準拠しているかを示します。先頭カードである必要があります。</td>
             </tr>
             <tr>
               <td><code>BITPIX</code></td>
               <td>Integer</td>
               <td><code>16</code> / <code>-32</code></td>
-              <td>Bits per data pixel (16 = unsigned/signed short; -32 = single-precision IEEE float).</td>
+              <td>1画素あたりのビット深度（16 = 符号付き/符号なし短整数、-32 = 単精度浮動小数点）。</td>
             </tr>
             <tr>
               <td><code>NAXIS</code></td>
               <td>Integer</td>
-              <td><code>2</code> (or <code>3</code>)</td>
-              <td>Number of coordinate axes (2 for 2D astronomical image; 3 for datacubes/RGB).</td>
+              <td><code>2</code> (または <code>3</code>)</td>
+              <td>座標軸の数（2は2次元画像、3はデータキューブまたはカラーRGB配列）。</td>
             </tr>
             <tr>
               <td><code>OBJECT</code></td>
               <td>String</td>
-              <td><code>'M42 Orion Nebula'</code></td>
-              <td>Target celestial object name for cataloging and project identification.</td>
+              <td><code>'M42 Orion'</code></td>
+              <td>対象天体名。カタログ管理やアーカイブ検索用。</td>
             </tr>
             <tr>
               <td><code>EXPTIME</code></td>
               <td>Float / Number</td>
               <td><code>300.0</code></td>
-              <td>Total exposure duration of the observation measured in seconds.</td>
+              <td>フレームの合計露出時間（秒単位）。</td>
             </tr>
             <tr>
               <td><code>FILTER</code></td>
               <td>String</td>
-              <td><code>'Ha'</code>, <code>'OIII'</code>, <code>'Luminance'</code></td>
-              <td>Optical filter utilized during the capture sequence.</td>
+              <td><code>'Ha'</code>, <code>'OIII'</code></td>
+              <td>撮影に使用された光学フィルター名。</td>
             </tr>
             <tr>
               <td><code>BAYERPAT</code></td>
               <td>String</td>
               <td><code>'RGGB'</code> / <code>'BGGR'</code></td>
-              <td>CFA (Color Filter Array) pattern required for proper debayering.</td>
+              <td>カラーフィルターアレイの配列パターン。デベイヤー処理に必須。</td>
             </tr>
             <tr>
               <td><code>FOCALLEN</code></td>
               <td>Float / Number</td>
               <td><code>800.0</code></td>
-              <td>Effective focal length of the telescope/lens optical train in millimeters.</td>
+              <td>望遠鏡やレンズの有効焦点距離（ミリメートル、mm）。</td>
             </tr>
             <tr>
               <td><code>PIXSIZE</code></td>
               <td>Float / Number</td>
               <td><code>3.76</code></td>
-              <td>Physical pixel pitch of the sensor active area in microns (μm).</td>
+              <td>センサー画素の物理的ピッチ（マイクロメートル、μm）。</td>
             </tr>
             <tr>
               <td><code>GAIN</code></td>
               <td>Integer / Float</td>
               <td><code>100</code></td>
-              <td>Sensor amplifier gain setting utilized during frame acquisition.</td>
+              <td>撮影時のカメラセンサーのゲイン設定値。</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- Call to Action Banner -->
     <div class="cta-container">
-      <h3>Fix Your FITS Headers Online</h3>
-      <p>Clean, correct, and re-export your astrophotography files in seconds with zero server uploads.</p>
-      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">Open FITS Header Editor Online ↗</a>
+      <h3>FITSヘッダーをオンラインで今すぐ修復</h3>
+      <p>即座に修正・ダウンロード可能。安全なクライアントサイド実行ツールです。</p>
+      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">FITS Header Editor Online を開く ↗</a>
     </div>
 
-    <!-- Related Links -->
     <section class="card">
-      <h2>🔗 Related Resources</h2>
-      <p>Check out our comprehensive tool comparison: <a href="index.html" style="font-weight: 600; color: var(--primary);">Desktop Pro Software vs. Python Astropy vs. Online Browser Tool →</a></p>
+      <h2>🔗 関連コンテンツ</h2>
+      <p>各ツールの特徴を比較：<a href="index.html" style="font-weight: 600; color: var(--primary);">デスクトップソフト vs. Pythonスクリプト vs. オンラインブラウザツール徹底比較 →</a></p>
     </section>
 
     <footer>
-      <p>© 2026 FITS Metadata Standards Lab. Dedicated to open, accessible astronomical data processing.</p>
-      <p style="margin-top: 0.5rem; font-size: 0.82rem;">Standard guidelines in accordance with NASA FITS Standard V4.0.</p>
+      <p>© 2026 FITS Metadata Standards Lab. 天体観測とデータ標準化のために。</p>
+      <p style="margin-top: 0.5rem; font-size: 0.82rem;">NASA FITS Standard V4.0 に準拠。</p>
     </footer>
 
   </div>

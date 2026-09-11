@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How to Edit & Fix Astronomical FITS Headers: Practical Troubleshooting Guide</title>
-  <meta name="description" content="Step-by-step practical guide on editing and diagnosing FITS header metadata for astrophotographers and researchers. Learn to fix plate-solving, Bayer pattern, and exposure errors.">
-  <meta name="author" content="Observational Astrophotography Technical Group">
+  <title>Cómo Editar y Reparar Cabeceras FITS: Guía Práctica de Solución de Problemas</title>
+  <meta name="description" content="Guía paso a paso para inspeccionar y corregir metadatos FITS en astrofotografía. Solucione fallos de resolución de placas, patrón de Bayer y tiempos de exposición.">
+  <meta name="author" content="Equipo Técnico de Astrofotografía">
   <style>
     :root {
       --primary: #2563eb;
@@ -45,7 +45,6 @@
       margin: 2rem auto 4rem auto;
     }
 
-    /* Header & Navigation */
     header {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -162,7 +161,6 @@
       color: var(--text-main);
     }
 
-    /* Cards */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -196,7 +194,6 @@
       color: #334155;
     }
 
-    /* Problem / Solution Grid */
     .trouble-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -230,7 +227,6 @@
       margin-top: 0.75rem;
     }
 
-    /* Table */
     .table-container {
       overflow-x: auto;
       margin: 1.75rem 0;
@@ -270,7 +266,6 @@
       background: #f8fafc;
     }
 
-    /* Screenshots */
     .screenshot-box {
       margin: 2rem 0;
       background: #f8fafc;
@@ -360,191 +355,185 @@
 
   <div class="container">
     
-    <!-- Top Navigation -->
     <header>
       <div class="nav-bar">
         <a href="index.html" class="brand">
-          🔭 FITS Metadata Lab
+          🔭 Laboratorio de Metadatos FITS
         </a>
         <div class="nav-links">
-          <a href="index.html">Overview & Comparison</a>
-          <a href="edit-fits-header-guide.html" class="active">Practical Editing Guide</a>
-          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">Open Online Tool ↗</a>
+          <a href="index.html">Comparativa de Software</a>
+          <a href="edit-fits-header-guide.html" class="active">Guía Práctica</a>
+          <a href="https://abctool.info/fits-header-editor-online/" target="_blank" rel="noopener">Herramienta Online ↗</a>
           <div class="lang-switcher">
             🌐 
-            <a href="edit-fits-header-guide.html" class="active">EN</a> |
-            <a href="zh/edit-fits-header-guide.html">中文</a> |
-            <a href="es/edit-fits-header-guide.html">ES</a> |
-            <a href="ja/edit-fits-header-guide.html">JA</a>
+            <a href="../edit-fits-header-guide.html">EN</a> |
+            <a href="../zh/edit-fits-header-guide.html">中文</a> |
+            <a href="edit-fits-header-guide.html" class="active">ES</a> |
+            <a href="../ja/edit-fits-header-guide.html">JA</a>
           </div>
         </div>
       </div>
 
-      <h1>Practical Field Guide: How to Inspect & Edit Astronomical FITS Metadata</h1>
-      <p class="subtitle">A hands-on troubleshooting guide for resolving stacking failures, debayer errors, plate-solving issues, and mislabeled filter tags in astronomical FITS files.</p>
+      <h1>Guía Práctica: Cómo Inspeccionar y Editar Metadatos FITS</h1>
+      <p class="subtitle">Manual paso a paso para resolver fallos de apilado, problemas de debayerizado, errores en plate-solving y etiquetas de filtro perdidas.</p>
 
       <div class="eeat-badge">
         <div class="eeat-avatar">DOC</div>
         <div class="eeat-meta">
-          <strong>Field Tested by:</strong> Observational Astrophotography Technical Team<br>
-          <strong>Focus Area:</strong> Real-world FITS Header Repair & Calibration Workflows | <strong>Year:</strong> 2026
+          <strong>Validado en Campo por:</strong> Equipo Técnico de Astrofotografía Observacional<br>
+          <strong>Enfoque:</strong> Flujos de Reparación y Calibración de Cabeceras FITS | <strong>Año:</strong> 2026
         </div>
       </div>
     </header>
 
-    <!-- Why Header Metadata Breaks -->
     <section class="card">
-      <h2>⚠️ Common Real-World Scenarios Requiring Header Editing</h2>
-      <p>Whether you capture data with N.I.N.A., ASIAIR, KStars/Ekos, or proprietary observatory software, metadata errors frequently corrupt post-processing pipelines. Below are the most frequent issues experienced astronomers encounter:</p>
+      <h2>⚠️ Problemas Reales Comunes en Cabeceras FITS</h2>
+      <p>Tanto si captura con N.I.N.A., ASIAIR o software de observatorio, es habitual que falten datos esenciales:</p>
 
       <div class="trouble-grid">
         <div class="trouble-card">
-          <h4>❌ Missing or Corrupt BAYERPAT</h4>
-          <p>Color cameras (OSC) require a valid <code>BAYERPAT</code> (e.g. <code>RGGB</code>, <code>BGGR</code>). If missing, Siril or PixInsight produces monochromatic or inverted color images during debayering.</p>
-          <div class="solution"><strong>Fix:</strong> Add or edit the <code>BAYERPAT</code> keyword to match your sensor's color filter array pattern.</div>
+          <h4>❌ Falta o Error en BAYERPAT</h4>
+          <p>Las cámaras a color (OSC) requieren la clave <code>BAYERPAT</code> (ej. <code>RGGB</code>, <code>BGGR</code>). Si falta, Siril o PixInsight producen imágenes monocromáticas o colores invertidos.</p>
+          <div class="solution"><strong>Solución:</strong> Modifique o añada la clave <code>BAYERPAT</code> según el patrón exacto de su sensor.</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Plate-Solving Failures (WCS / Scale)</h4>
-          <p>Plate solvers (ASTAP, ASTROMETRY.NET) fail when telescope focal length (<code>FOCALLEN</code>) or sensor pixel size (<code>PIXSIZE</code> / <code>XPIXSZ</code>) are zero or incorrectly recorded.</p>
-          <div class="solution"><strong>Fix:</strong> Correct the exact optical parameters directly in the header table.</div>
+          <h4>❌ Fallos de Plate-Solving (WCS / Escala)</h4>
+          <p>Los resolvedores de campo (ASTAP, ASTROMETRY.NET) fallan si la distancia focal (<code>FOCALLEN</code>) o el tamaño de píxel (<code>PIXSIZE</code>) son cero o incorrectos.</p>
+          <div class="solution"><strong>Solución:</strong> Inserte los valores ópticos exactos en milímetros y micrómetros.</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Unassigned Filter Metadata in LRGB / SHO</h4>
-          <p>Mono imaging sequences occasionally lose the <code>FILTER</code> tag, causing automated stacking tools to blend Narrowband Ha with Luminance or Red channels.</p>
-          <div class="solution"><strong>Fix:</strong> Set the exact filter name (e.g., <code>Ha 3nm</code>, <code>OIII</code>, <code>Lum</code>) on all relevant subframes.</div>
+          <h4>❌ Etiqueta FILTER Ausente en Monocromo</h4>
+          <p>En sesiones LRGB o banda estrecha, una pérdida en la etiqueta <code>FILTER</code> puede hacer que el software mezcle tomas de Halfa con Luminancia.</p>
+          <div class="solution"><strong>Solución:</strong> Asigne el nombre del filtro (ej. <code>Ha 3nm</code>, <code>OIII</code>) a cada toma.</div>
         </div>
 
         <div class="trouble-card">
-          <h4>❌ Inconsistent Exposure Time (EXPTIME)</h4>
-          <p>When stacking with sigma-clipping or exposure weighting, zero or mismatched <code>EXPTIME</code> values distort signal-to-noise ratio (SNR) algorithms.</p>
-          <div class="solution"><strong>Fix:</strong> Recalibrate the numeric exposure time in seconds.</div>
+          <h4>❌ Tiempo de Exposición EXPTIME en Cero</h4>
+          <p>Al ponderar imágenes durante el apilado, un valor erróneo distorsiona el cálculo del ratio señal/ruido.</p>
+          <div class="solution"><strong>Solución:</strong> Calibre el tiempo de exposición numérico en segundos.</div>
         </div>
       </div>
     </section>
 
-    <!-- Visual Walkthrough -->
     <section class="card">
-      <h2>🛠️ Visual Step-by-Step Walkthrough</h2>
-      <p>Here is how you can inspect and modify these parameters safely using the zero-friction online editor:</p>
+      <h2>🛠️ Pasos Visuales para la Reparación</h2>
+      <p>Repare sus archivos de forma rápida y visual en el navegador sin scripts complejos:</p>
 
-      <h3>Step 1: Open and Inspect the File</h3>
-      <p>Load your subframe or master light into the browser. The file is parsed completely client-side:</p>
-
-      <div class="screenshot-box">
-        <img src="./img/1-fits-header-viewer-editor.png" alt="Loading FITS file into the editor" width="850">
-        <div class="caption">Figure 1: Client-side file selection interface. Drag your target file or load the sample data to test.</div>
-      </div>
-
-      <h3>Step 2: Locate, Modify, or Add Missing Keywords</h3>
-      <p>Use the structured table to make instant changes without writing scripts or opening terminal windows:</p>
+      <h3>Paso 1: Abra e Inspeccione el Archivo</h3>
+      <p>Cargue su imagen en el navegador. La lectura se ejecuta íntegramente en la memoria de su equipo:</p>
 
       <div class="screenshot-box">
-        <img src="./img/2-fits-header-editor-ui.png" alt="Editing FITS header cards" width="850">
-        <div class="caption">Figure 2: The interactive editor table displaying cards, types, values, comments, and quick helper injection buttons.</div>
+        <img src="../img/1-fits-header-viewer-editor.png" alt="Carga de archivo FITS" width="850">
+        <div class="caption">Figura 1: Pantalla de selección directa de archivos y carga de muestra.</div>
       </div>
 
-      <p><strong>Pro-Tip for Fast Editing:</strong> Click the <strong>Quick Helpers</strong> buttons at the top of the table (such as <code>+ OBJECT</code>, <code>+ EXPTIME</code>, <code>+ FILTER</code>, <code>+ BAYERPAT</code>, <code>+ GAIN</code>). The editor automatically fills the standardized keyword name and opens the input field with the proper data type pre-selected.</p>
+      <h3>Paso 2: Edite o Añada Nuevas Claves</h3>
+      <p>Modifique los valores en la tabla manteniendo las dimensiones estándar de 80 columnas:</p>
+
+      <div class="screenshot-box">
+        <img src="../img/2-fits-header-editor-ui.png" alt="Edición de cabeceras FITS" width="850">
+        <div class="caption">Figura 2: Tabla interactiva con tipos de datos, comentarios y botones de acceso directo.</div>
+      </div>
+
+      <p><strong>Consejo de Uso Rápido:</strong> Utilice los botones de <strong>Quick Helpers</strong> (como <code>+ OBJECT</code>, <code>+ EXPTIME</code>, <code>+ FILTER</code>, <code>+ BAYERPAT</code>) para rellenar automáticamente la clave con el formato correcto.</p>
     </section>
 
-    <!-- Standard Astronomical Keywords Reference Table -->
     <section class="card">
-      <h2>📖 Standard Astronomical FITS Keywords Reference Table</h2>
-      <p>Refer to this reference when modifying standard header cards to maintain compatibility with NASA and IAU guidelines:</p>
+      <h2>📖 Tabla de Referencia de Palabras Clave FITS</h2>
+      <p>Referencia de consulta para asegurar el cumplimiento con el estándar astronómico internacional:</p>
 
       <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>FITS Keyword</th>
-              <th>Data Type</th>
-              <th>Example Standard Value</th>
-              <th>Scientific Description & Function</th>
+              <th>Palabra Clave FITS</th>
+              <th>Tipo de Dato</th>
+              <th>Valor de Ejemplo</th>
+              <th>Función Científica y Descripción</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>SIMPLE</code></td>
-              <td>Boolean</td>
+              <td>Booleano</td>
               <td><code>T</code></td>
-              <td>Indicates whether the file conforms strictly to the standard FITS specification. Must be first card.</td>
+              <td>Indica si el archivo cumple estrictamente el estándar FITS. Debe ser la primera tarjeta.</td>
             </tr>
             <tr>
               <td><code>BITPIX</code></td>
-              <td>Integer</td>
+              <td>Entero</td>
               <td><code>16</code> / <code>-32</code></td>
-              <td>Bits per data pixel (16 = unsigned/signed short; -32 = single-precision IEEE float).</td>
+              <td>Bits por píxel de datos (16 = entero corto; -32 = coma flotante IEEE).</td>
             </tr>
             <tr>
               <td><code>NAXIS</code></td>
-              <td>Integer</td>
-              <td><code>2</code> (or <code>3</code>)</td>
-              <td>Number of coordinate axes (2 for 2D astronomical image; 3 for datacubes/RGB).</td>
+              <td>Entero</td>
+              <td><code>2</code> (o <code>3</code>)</td>
+              <td>Número de ejes coordenados (2 para imagen 2D; 3 para cubos de datos o RGB).</td>
             </tr>
             <tr>
               <td><code>OBJECT</code></td>
-              <td>String</td>
-              <td><code>'M42 Orion Nebula'</code></td>
-              <td>Target celestial object name for cataloging and project identification.</td>
+              <td>Texto</td>
+              <td><code>'M42 Orion'</code></td>
+              <td>Nombre del objeto celeste fotografiado para catalogación y archivo.</td>
             </tr>
             <tr>
               <td><code>EXPTIME</code></td>
-              <td>Float / Number</td>
+              <td>Decimal / Número</td>
               <td><code>300.0</code></td>
-              <td>Total exposure duration of the observation measured in seconds.</td>
+              <td>Duración de la exposición medida en segundos.</td>
             </tr>
             <tr>
               <td><code>FILTER</code></td>
-              <td>String</td>
-              <td><code>'Ha'</code>, <code>'OIII'</code>, <code>'Luminance'</code></td>
-              <td>Optical filter utilized during the capture sequence.</td>
+              <td>Texto</td>
+              <td><code>'Ha'</code>, <code>'OIII'</code></td>
+              <td>Filtro óptico utilizado durante la adquisición del cuadro.</td>
             </tr>
             <tr>
               <td><code>BAYERPAT</code></td>
-              <td>String</td>
+              <td>Texto</td>
               <td><code>'RGGB'</code> / <code>'BGGR'</code></td>
-              <td>CFA (Color Filter Array) pattern required for proper debayering.</td>
+              <td>Patrón de matriz de color necesario para un debayerizado correcto.</td>
             </tr>
             <tr>
               <td><code>FOCALLEN</code></td>
-              <td>Float / Number</td>
+              <td>Decimal / Número</td>
               <td><code>800.0</code></td>
-              <td>Effective focal length of the telescope/lens optical train in millimeters.</td>
+              <td>Distancia focal efectiva del telescopio o lente en milímetros (mm).</td>
             </tr>
             <tr>
               <td><code>PIXSIZE</code></td>
-              <td>Float / Number</td>
+              <td>Decimal / Número</td>
               <td><code>3.76</code></td>
-              <td>Physical pixel pitch of the sensor active area in microns (μm).</td>
+              <td>Tamaño físico de cada píxel del sensor en micrómetros (μm).</td>
             </tr>
             <tr>
               <td><code>GAIN</code></td>
-              <td>Integer / Float</td>
+              <td>Entero / Decimal</td>
               <td><code>100</code></td>
-              <td>Sensor amplifier gain setting utilized during frame acquisition.</td>
+              <td>Ganancia del sensor empleada durante la captura.</td>
             </tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- Call to Action Banner -->
     <div class="cta-container">
-      <h3>Fix Your FITS Headers Online</h3>
-      <p>Clean, correct, and re-export your astrophotography files in seconds with zero server uploads.</p>
-      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">Open FITS Header Editor Online ↗</a>
+      <h3>Repare sus Cabeceras FITS Online Ahora</h3>
+      <p>Modifique, guarde y vuelva a descargar sus archivos con total seguridad y rapidez.</p>
+      <a href="https://abctool.info/fits-header-editor-online/" target="_blank" class="cta-btn">Abrir FITS Header Editor Online ↗</a>
     </div>
 
-    <!-- Related Links -->
     <section class="card">
-      <h2>🔗 Related Resources</h2>
-      <p>Check out our comprehensive tool comparison: <a href="index.html" style="font-weight: 600; color: var(--primary);">Desktop Pro Software vs. Python Astropy vs. Online Browser Tool →</a></p>
+      <h2>🔗 Recursos Relacionados</h2>
+      <p>Consulte la comparativa completa de software: <a href="index.html" style="font-weight: 600; color: var(--primary);">Programas de Escritorio vs. Scripts de Python vs. Herramienta Web Online →</a></p>
     </section>
 
     <footer>
-      <p>© 2026 FITS Metadata Standards Lab. Dedicated to open, accessible astronomical data processing.</p>
-      <p style="margin-top: 0.5rem; font-size: 0.82rem;">Standard guidelines in accordance with NASA FITS Standard V4.0.</p>
+      <p>© 2026 FITS Metadata Standards Lab. Para astrónomos y astrofotógrafos.</p>
+      <p style="margin-top: 0.5rem; font-size: 0.82rem;">Estandarizado según las especificaciones de la NASA y la IAU.</p>
     </footer>
 
   </div>
