@@ -3,6 +3,8 @@
 > A fast, secure, browser-based tool to inspect, edit, add, and export astronomical **FITS** (`.fits`, `.fit`, `.fts`) header metadata directly on client-side.
 >
 > 🔗 **Online Tool**: [https://abctool.info/fits-header-editor-online/](https://abctool.info/fits-header-editor-online/)
+>
+> 🌐 **English** | [Español](README.es.md) | [中文](README.zh.md) | [日本語](README.ja.md)
 
 ---
 
